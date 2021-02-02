@@ -1,12 +1,18 @@
 from django.contrib.auth.models import User
-from django.db.models import (CharField, DateTimeField, ForeignKey, Model,
-                              TextField)
+from django.core.files.storage import FileSystemStorage
+from django.db.models import (CASCADE, DO_NOTHING, DateTimeField, ForeignKey, ImageField,
+                              Model, TextField)
+
+PICTURE_PATH = FileSystemStorage(location='/media/photos/')
+
 
 # Create your models here.
 
 
 class Account(User):
     reg_confirmed_date = DateTimeField()
+    about_yourself = TextField()
+    avatar = ImageField(storage=PICTURE_PATH)
 
     def confirm_registration():
         pass
@@ -19,7 +25,7 @@ class Post(Model):
     text = TextField()
     posted_time = DateTimeField()
     edited_time = DateTimeField()
-    account = ForeignKey(Account)
+    account = ForeignKey(Account, on_delete=DO_NOTHING)
 
     def like_unlike():
         pass
@@ -29,26 +35,29 @@ class Post(Model):
 
 
 class Picture(Model):
-    picture_itself = CharField()
-    preview = CharField()
-    post = ForeignKey(Post)
+    picture_itself = ImageField(storage=PICTURE_PATH)
+    description = TextField()
+    picture_preview = ImageField(storage=PICTURE_PATH)
+    post = ForeignKey(Post, on_delete=DO_NOTHING)
+
+    def like_unlike():
+        pass
 
 
 class Comment(Model):
     text = TextField()
-    images_refs = CharField()
     posted_time = DateTimeField()
     edited_time = DateTimeField()
-    post = ForeignKey(Post)
-    author = ForeignKey(Account)
+    post = ForeignKey(Post, on_delete=CASCADE)
+    author = ForeignKey(Account, on_delete=DO_NOTHING)
 
     def like_unlike():
         pass
 
 
 class Like(Model):
-    picture = ForeignKey(Picture)
-    post = ForeignKey(Post)
-    comment = ForeignKey(Comment)
-    author = ForeignKey(Account)
+    picture = ForeignKey(Picture, on_delete=CASCADE)
+    post = ForeignKey(Post, on_delete=CASCADE)
+    comment = ForeignKey(Comment, on_delete=CASCADE)
+    author = ForeignKey(Account, on_delete=DO_NOTHING)
     time = DateTimeField()
