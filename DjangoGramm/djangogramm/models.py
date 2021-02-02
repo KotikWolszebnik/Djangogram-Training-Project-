@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from django.db.models import (CASCADE, DO_NOTHING, DateTimeField, ForeignKey, ImageField,
-                              Model, TextField)
+from django.db.models import (CASCADE, DO_NOTHING, DateTimeField, ForeignKey,
+                              ImageField, Model, TextField)
 
 PICTURE_PATH = FileSystemStorage(location='/media/photos/')
 
