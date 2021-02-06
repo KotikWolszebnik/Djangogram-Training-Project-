@@ -5,4 +5,5 @@ from .models import Account, Comment, Like, Picture, Post
 # Register your models here.
 
 
-admin.site.register(Account, Comment, Like, Picture, Post)
+for model in [Account, Comment, Like, Picture, Post]:
+    admin.site.register(model)
