@@ -1,27 +1,47 @@
-from django.shortcuts import render
+from django.contrib.auth import login, logout
+from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_protect
+from .models import Account
+from .forms import LoginForm, RegistrationForm
 
 # Create your views here.
 
 
-def show_login_page(request):
-    return render(request, 'login.html')
+@csrf_protect
+def login_account(request):
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            account = form.get_user()
+            login(request, account)
+            return redirect(f'wall/{account.pk}/')
+    return render(request, 'login.html', dict(form=form))
 
 
-def login():
-    pass
+@csrf_protect
+def logout_account(request):
+    logout(request)
+    return redirect('login')
 
 
-def show_registration_page(request):
-    return render(request, 'registration.html')
-
-
-def regisrate():
-    pass
+@csrf_protect
+def register(request):
+    form = RegistrationForm()
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid:
+            form.save()
+            account = form.get_user()
+            return redirect(f'wall/{account.pk}/')
+    return render(request, 'registration.html', dict(form=form))
 
 
 def confirm_registration():
     pass
 
 
-def show_wall(request):
-    return render(request, 'wall.html')
+def show_wall(request, account_id: int):
+    account = Account.objects.get(pk=account_id)
+    
+    return render(request, 'wall.html', dict(account=account))
