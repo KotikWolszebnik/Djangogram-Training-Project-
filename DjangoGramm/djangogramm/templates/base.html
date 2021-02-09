@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>{% block title_head %}{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+
+<body>
+	<header>
+		{% block head %}
+			{% block logo_picture %}{% endblock %}
+			<h1>{% block title %}{% endblock %}</h1>
+			{% block buttons_and_userphoto %}{% endblock %}
+		{% endblock head%}
+	</header>
+		{% block page %}
+			{% block content %}
+			{% endblock %}
+		{% endblock %}
+	<footer>
+		{% block footer %}
+			{% now "DATETIME_FORMAT" %}
+		{% endblock %}
+	</footer>
+</body>
+
+</html>

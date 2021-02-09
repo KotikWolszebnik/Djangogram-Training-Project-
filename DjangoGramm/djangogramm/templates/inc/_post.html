@@ -1,0 +1,6 @@
+{% block post_content %}{% endblock post_content %}
+{% block post_comments %}
+    {% for comment in post.comments.all %}
+        {% include 'inc/_comments.html' %}
+    {% endfor %}
+{% endblock post_comments %}

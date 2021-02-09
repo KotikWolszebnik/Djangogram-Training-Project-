@@ -1,22 +1,59 @@
-<!DOCTYPE HTML>
-<html>
+{% extends 'base.html' %}
+    {% block title_head %}
+        {{ account.get_full_name }}
+    {% endblock title_head %}
+    {% block head %}
+        <!-- Image and text -->
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-top">
+                    DJANGOGRAMM
+                </a>
+            
+                {% block buttons_and_userphoto %}
+                    userphoto
+                    {% include 'inc/_logout_button.html' %}
+                    {% include 'inc/_login_button.html' %}
+                    {% include 'inc/_registration_button.html' %}
+                    {% include 'inc/_edit_profile_button.html' %}
+                {% endblock buttons_and_userphoto %}
+            </div>
+        </nav>
+        {% comment %} {% block logo_picture %}{% endblock %}
+        <h1>
+            {% block title %}
+                {{ account.get_full_name }}
+            {% endblock title %}
+        </h1>
+        {% block buttons_and_userphoto %}
+            <p>userphoto</p>
+            {% include 'inc/_logout_button.html' %}
+            {% include 'inc/_login_button.html' %}
+            {% include 'inc/_registration_button.html' %}
+            {% include 'inc/_edit_profile_button.html' %}
+        {% endblock buttons_and_userphoto %} {% endcomment %}
+    {% endblock head %}
+    {% block page %}
+        {% block content %}
+            {% block post_creation %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Log in</title>
-</head>
-
-<body>
-    <h1>Log in</h1>
-    <form action="/login" method="post">
-        <input required placeholder="email" name="email"></input>
-        <input required placeholder="password" type="password" name="password"></input>
-        <button type="submit">Log in</button>
-    </form>
-    <form action="/registration" method="get">
-        <button type="submit">Registration</button>
-    </form>
-</body>
-<footer></footer>
-
-</html>
+            {% endblock post_creation %}
+            {% block posts %}
+                {% for post in account.posts.all %}
+                    {% block post %}
+                        {% include 'inc/_post.html' %}
+                    {% endblock post %}
+                {% endfor %}
+            {% endblock posts %}
+        {% endblock content %}
+        {% block account_info %}
+            <div>
+                {{ account.avatar.picture_itself }}
+                {{ account.date_joined }}
+                {{ account.get_full_name }}
+                {{ account.about_yourself }}
+                {% include 'inc/_edit_profile_button.html' %}
+            </div>
+        {% endblock account_info %}
+    {% endblock page%}
