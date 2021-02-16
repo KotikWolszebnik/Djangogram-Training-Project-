@@ -1,47 +1,78 @@
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
-from .models import Account
+
 from .forms import LoginForm, RegistrationForm
+from .models import Account, Post
 
 # Create your views here.
 
 
 @csrf_protect
+def register(request):
+    if request.user.is_authenticated:
+        logout(request)
+    form = RegistrationForm()
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid:
+            account = form.save()
+            login(request, account)
+            return redirect(f'/wall/{account.pk}/')
+    return render(request, 'registration.html', dict(form=form))
+
+
+@csrf_protect
 def login_account(request):
+    if request.user.is_authenticated:
+        logout(request)
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
             account = form.get_user()
             login(request, account)
-            return redirect(f'wall/{account.pk}/')
+            return redirect(f'/wall/{account.pk}/')
     return render(request, 'login.html', dict(form=form))
+
+
+def show_wall(request, account_id: int):
+    account = Account.objects.get(pk=account_id)
+    return render(request, 'wall.html', dict(account=account))
+
+
+@csrf_protect
+def post(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            Post(
+                id=None,
+                author=request.user,
+                text=request.POST.get('text'),
+            ).save()
+            return redirect(f'/wall/{request.user.pk}/')
+    return render(request, 'wall.html')
+
+
+@csrf_protect
+def delete_post(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            Post.objects.get(pk=request.POST.get('id')).delete()
+            return redirect(f'/wall/{request.user.pk}/')
 
 
 @csrf_protect
 def logout_account(request):
-    logout(request)
-    return redirect('login')
-
-
-@csrf_protect
-def register(request):
-    form = RegistrationForm()
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid:
-            form.save()
-            account = form.get_user()
-            return redirect(f'wall/{account.pk}/')
-    return render(request, 'registration.html', dict(form=form))
+        if request.user.is_authenticated:
+            logout(request)
+            return redirect('login')
 
 
 def confirm_registration():
     pass
 
 
-def show_wall(request, account_id: int):
-    account = Account.objects.get(pk=account_id)
-    
-    return render(request, 'wall.html', dict(account=account))
+def edit_profile(request):
+    return redirect(f'/wall/{account.pk}/')
