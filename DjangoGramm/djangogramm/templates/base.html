@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE HTML>
 <html>
 
@@ -5,26 +6,40 @@
 	<meta charset="utf-8">
 	<title>{% block title_head %}{% endblock %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	<link href="{% static 'bootstrap-5.0.0-beta2-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'style.css' %}" rel="stylesheet">
+	<link rel="shortcut icon" type="image/png" href="/media/photos/2021-02-10_02_38_33.png"/>
 </head>
 
 <body>
 	<header>
-		{% block head %}
-			{% block logo_picture %}{% endblock %}
-			<h1>{% block title %}{% endblock %}</h1>
-			{% block buttons_and_userphoto %}{% endblock %}
-		{% endblock head%}
+		{% block header %}
+			{% include 'inc/_header.html' %}
+		{% endblock header %}
 	</header>
-		{% block page %}
-			{% block content %}
-			{% endblock %}
-		{% endblock %}
+
+	<div class="container mt-3">
+		<div class="row">
+			{% block sidebar %}
+			
+			{% endblock sidebar %}
+			<div class="col-md-8">
+				{% block postmaking %}
+				
+				{% endblock postmaking %}
+
+				{% block posts %}
+				
+				{% endblock posts %}
+			</div>
+		</div>
+	</div>
+
 	<footer>
-		{% block footer %}
-			{% now "DATETIME_FORMAT" %}
-		{% endblock %}
+		{% now "DATETIME_FORMAT" %}
 	</footer>
+	
+	<script src="{% static 'bootstrap-5.0.0-beta2-dist/js/bootstrap.min.js' %}"></script>
 </body>
 
 </html>

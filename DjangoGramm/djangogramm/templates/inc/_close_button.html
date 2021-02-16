@@ -1,0 +1,5 @@
+<form action="/post/delete/" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="id" value={{ post.pk }}>
+    <button type="submit" class="btn-close" aria-label="Close"></button>
+</form>

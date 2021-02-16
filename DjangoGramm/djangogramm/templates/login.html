@@ -1,11 +1,24 @@
 {% extends 'base.html' %}
     {% block title_head %}Log in{% endblock title_head %}
-    {% block title %}Log in{% endblock title %}
-    {% block content %}
-        <form action="/login/" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Log in</button>
-        </form>
-        {% include 'inc/_registration_button.html' %}
-    {% endblock content %}
+
+    {% block header %}
+        {% include 'inc/_header_without_buttons.html' %}
+    {% endblock header %}
+
+    {% block sidebar %}
+        <div class="col-md-4">
+            <div class="card border-success mb-3" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Log in</h5>
+                    <form action="/login/" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    <div class="d-inline-flex p-2">
+                        <button type="submit" class="btn btn-success mx-3">OK</button>
+                    </form>
+                        {% include 'inc/_registration_button.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock sidebar %}

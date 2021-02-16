@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
     {% block title_head %}Registration{% endblock title_head %}
-    {% block title %}Registration{% endblock title %}
-    {% block content %}
-        <form action="/registration/" method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Register</button>
-        </form>
-            <p>After registration, an individually generated link will be sent to your specified email address.</p>
-            <p>Click on it to confirm your registration on the site so that you can edit your profile and view the profiles of other users. </p>
-    {% endblock content %}
+
+    {% block header %}
+        {% include 'inc/_header_without_buttons.html' %}
+    {% endblock header %}
+
+    {% block sidebar %}
+        <div class="col-md-8">
+            <div class="card border-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Registration</h5>
+                    <form action="/registration/" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    <div class="d-inline-flex p-2">
+                        <button type="submit" class="btn btn-success">OK</button>
+                    </form>
+                        {% include 'inc/_login_button.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock sidebar %}
+
+    {% block posts %}
+        <div class="card border-danger mb-3">
+            <h4 class="card-text mx-3">
+                <p>After registration, an individually generated link will be sent to your specified email address.</p>
+                <p>Click on it to confirm your registration on the site so that you can edit your profile and view the profiles of other users. </p>
+            </h4>
+        </div>
+    {% endblock posts %}

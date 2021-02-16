@@ -1,0 +1,29 @@
+ <div class="col-md-4">
+    <div class="card mb-3">
+        {% if account.avatar %}
+            <img src="..." class="card-img-top" alt="...">
+        {% else %}
+            <div class="mx-auto mt-3">
+                <img src="/media/photos/unknown-user.jpg" alt="" width="250" 
+                height="300">
+            </div>
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">
+                {{ account.get_full_name }}
+            </h5>
+            <p class="card-text">
+                {{ account.about_yourself }}
+            </p>
+            <p class="card-text">
+                Registrated: 
+                <small class="text-muted">
+                    {{ account.date_joined }}
+                </small>
+            </p>
+            {% if request.user == account %}
+                {% include 'inc/_edit_profile_button.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>

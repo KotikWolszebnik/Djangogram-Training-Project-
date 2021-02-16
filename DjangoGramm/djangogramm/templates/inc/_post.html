@@ -1,4 +1,25 @@
-{% block post_content %}{% endblock post_content %}
+{% block post_content %}
+    <div class="card mb-3">
+        <div class="card-header">
+            Created at: {{ post.posted_time }}
+            {% if post.edited_time %}
+                <b>edited</b>
+            {% endif %}
+
+            {% if post.author == request.user %}
+                {% block post_buttons %}
+                    {% include 'inc/_close_button.html' %}
+                {% endblock post_buttons %}
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ post.text }}</p>
+        </div>
+        <div class="card-footer">
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+{% endblock post_content %}
 {% block post_comments %}
     {% for comment in post.comments.all %}
         {% include 'inc/_comments.html' %}
