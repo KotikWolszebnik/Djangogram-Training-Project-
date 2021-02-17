@@ -58,7 +58,7 @@ class Post(Model):
 
 class Picture(Model):
     id = IntegerField(primary_key=True, unique=True)
-    uploader = OneToOneField(
+    uploader = ForeignKey(
         Account, on_delete=SET_NULL, null=True, related_name='uploaded_pictures')
     loading_time = DateTimeField(auto_now_add=True)
     picture_itself = ImageField(upload_to=PICTURE_PATH)

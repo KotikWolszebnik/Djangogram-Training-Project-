@@ -2,7 +2,11 @@
     <div class="card mb-3">
         {% if request.user == account %}
             <div class="card-header">
-                <form enctype="multipart/form-data" action="/profile/avatar/" method="POST">
+                <form action="/avatar/delete/" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-close" aria-label="Close"></button>
+                </form>
+                <form enctype="multipart/form-data" action="/avatar/" method="POST">
                     {% csrf_token %}
                     <p class="card-text">
                         <small class="text-muted">

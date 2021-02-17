@@ -93,15 +93,31 @@ def edit_profile(request):
 @csrf_protect
 def setup_avatar(request):
     if request.user.is_authenticated:
-        try:
-            request.user.avatar.delete()
-        except ObjectDoesNotExist:
-            pass
-        finally:
-            if request.method == 'POST':
+        if request.method == 'POST':
+            try:
+                picture = Picture.objects.get(avatar_of=request.user)
+                picture.avatar_of = None
+                picture.save()
+            except ObjectDoesNotExist:
+                pass
+            finally:
                 Picture(
                     picture_itself=request.FILES.get('avatar'),
                     uploader=request.user,
                     avatar_of=request.user,
                 ).save()
+                return redirect(f'/wall/{request.user.pk}/')
+
+
+@csrf_protect
+def delete_avatar(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                picture = Picture.objects.get(avatar_of=request.user)
+                picture.avatar_of = None
+                picture.save()
+            except ObjectDoesNotExist:
+                pass
+            finally:
                 return redirect(f'/wall/{request.user.pk}/')
