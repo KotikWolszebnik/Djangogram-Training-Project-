@@ -1,9 +1,10 @@
 from django.contrib.auth import login, logout
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
 from .forms import LoginForm, RegistrationForm
-from .models import Account, Post, Picture
+from .models import Account, Picture, Post
 
 # Create your views here.
 
@@ -92,10 +93,15 @@ def edit_profile(request):
 @csrf_protect
 def setup_avatar(request):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            Picture(
-                picture_itself=request.FILES.get('avatar'),
-                uploader=request.user,
-                avatar_of=request.user,
-            ).save()
-            return redirect(f'/wall/{request.user.pk}/')
+        try:
+            request.user.avatar.delete()
+        except ObjectDoesNotExist:
+            pass
+        finally:
+            if request.method == 'POST':
+                Picture(
+                    picture_itself=request.FILES.get('avatar'),
+                    uploader=request.user,
+                    avatar_of=request.user,
+                ).save()
+                return redirect(f'/wall/{request.user.pk}/')
