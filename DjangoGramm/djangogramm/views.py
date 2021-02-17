@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
 from .forms import LoginForm, RegistrationForm
-from .models import Account, Post
+from .models import Account, Post, Picture
 
 # Create your views here.
 
@@ -36,9 +36,15 @@ def login_account(request):
     return render(request, 'login.html', dict(form=form))
 
 
+@csrf_protect
 def show_wall(request, account_id: int):
     account = Account.objects.get(pk=account_id)
-    return render(request, 'wall.html', dict(account=account))
+    data = dict(account=account)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if request.POST.get('edit_profile'):
+                data = dict(account=account, edit_profile=True)
+    return render(request, 'wall.html', data)
 
 
 @csrf_protect
@@ -74,5 +80,22 @@ def confirm_registration():
     pass
 
 
+@csrf_protect
 def edit_profile(request):
-    return redirect(f'/wall/{account.pk}/')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            request.user.about_yourself = request.POST.get('about_yourself')
+            request.user.save()
+            return redirect(f'/wall/{request.user.pk}/')
+
+
+@csrf_protect
+def setup_avatar(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            Picture(
+                picture_itself=request.FILES.get('avatar'),
+                uploader=request.user,
+                avatar_of=request.user,
+            ).save()
+            return redirect(f'/wall/{request.user.pk}/')

@@ -1,4 +1,6 @@
-<form action="/profile/" method="GET">
+<form action="/wall/{{ request.user.pk }}/" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="edit_profile" value=True>
     <button class="btn btn-outline-success mx-3" type="submit">
         Edit your profile
     </button>

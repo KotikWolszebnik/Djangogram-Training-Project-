@@ -5,7 +5,7 @@ from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, ImageField, IntegerField, Model,
                               OneToOneField, TextField)
 
-PICTURE_PATH = 'photos/%Y/%m/%d/'
+PICTURE_PATH = 'media/photos/%Y/%m/%d/'
 
 
 # Create your models here.

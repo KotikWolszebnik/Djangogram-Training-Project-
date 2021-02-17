@@ -1,16 +1,21 @@
 {% block post_content %}
     <div class="card mb-3">
         <div class="card-header">
-            Created at: {{ post.posted_time }}
-            {% if post.edited_time %}
-                <b>edited</b>
-            {% endif %}
-
-            {% if post.author == request.user %}
-                {% block post_buttons %}
-                    {% include 'inc/_close_button.html' %}
-                {% endblock post_buttons %}
-            {% endif %}
+            <div class="row">
+                <div class="d-inline-flex">
+                    Created at: {{ post.posted_time }}
+                    {% if post.edited_time %}
+                        <b>edited</b>
+                    {% endif %}
+                </div>
+                <div class="d-inline-flex p-2 justify-content-end">
+                    {% if post.author == request.user %}
+                        {% block post_buttons %}
+                            {% include 'inc/_close_button.html' %}
+                        {% endblock post_buttons %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <p class="card-text">{{ post.text }}</p>

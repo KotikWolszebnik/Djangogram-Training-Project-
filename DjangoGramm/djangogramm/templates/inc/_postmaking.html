@@ -5,7 +5,7 @@
     <div class="card-body">
         <form action="/post/" method="POST">
             {% csrf_token %}
-            <textarea required name="text" placeholder="text"></textarea>
+            <textarea required name="text" cols="81" rows="5" placeholder="text"></textarea>
     </div>
     <div class="card-footer">
         <button class="btn btn-success mx-3" type="submit">Add Post</button>

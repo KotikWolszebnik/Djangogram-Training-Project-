@@ -1,0 +1,12 @@
+<p class="card-text">
+    {{ account.about_yourself }}
+</p>
+<p class="card-text">
+    Registrated: 
+    <small class="text-muted">
+        {{ account.date_joined }}
+    </small>
+</p>
+{% if request.user == account %}
+    {% include 'inc/_edit_profile_button.html' %}
+{% endif %}

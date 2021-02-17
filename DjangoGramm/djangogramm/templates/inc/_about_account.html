@@ -1,7 +1,23 @@
  <div class="col-md-4">
     <div class="card mb-3">
+        {% if request.user == account %}
+            <div class="card-header">
+                <form enctype="multipart/form-data" action="/profile/avatar/" method="POST">
+                    {% csrf_token %}
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Set-up a profile's picture
+                        </small>
+                    </p>
+                    <input type="file" accept="image/*" name="avatar">
+                    <button type="submit">upload</button>
+                </form>
+            </div>
+        {% endif %}
         {% if account.avatar %}
-            <img src="..." class="card-img-top" alt="...">
+            <div class="mx-auto mt-3">
+                <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top" alt="" width="250" height="300">
+            </div>
         {% else %}
             <div class="mx-auto mt-3">
                 <img src="/media/photos/unknown-user.jpg" alt="" width="250" 
@@ -12,17 +28,10 @@
             <h5 class="card-title">
                 {{ account.get_full_name }}
             </h5>
-            <p class="card-text">
-                {{ account.about_yourself }}
-            </p>
-            <p class="card-text">
-                Registrated: 
-                <small class="text-muted">
-                    {{ account.date_joined }}
-                </small>
-            </p>
-            {% if request.user == account %}
-                {% include 'inc/_edit_profile_button.html' %}
+            {% if edit_profile %}
+                {% include 'inc/_profile_editing.html' %}
+            {% else %}
+                {% include 'inc/_profile_info.html' %}
             {% endif %}
         </div>
     </div>
