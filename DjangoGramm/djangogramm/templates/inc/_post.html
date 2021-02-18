@@ -20,8 +20,15 @@
         <div class="card-body">
             <p class="card-text">{{ post.text }}</p>
         </div>
+        <div>
+            {% for picture in post.pictures.all %}
+            <div class="mx-auto mt-3">
+                <img src="{{ picture.picture_itself.url }}" class="card-img-top" alt="" >
+            </div>
+            {% endfor %}
+        </div>
         <div class="card-footer">
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+
         </div>
     </div>
 {% endblock post_content %}

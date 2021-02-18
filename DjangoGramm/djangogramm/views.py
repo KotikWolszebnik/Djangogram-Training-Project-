@@ -52,11 +52,18 @@ def show_wall(request, account_id: int):
 def post(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            Post(
+            post = Post.objects.create(
                 id=None,
                 author=request.user,
                 text=request.POST.get('text'),
-            ).save()
+            )
+            post.save()
+            for picture in request.FILES.getlist('pictures'):
+                Picture(
+                    picture_itself=picture,
+                    uploader=request.user,
+                    post=post,
+                ).save()
             return redirect(f'/wall/{request.user.pk}/')
     return render(request, 'wall.html')
 

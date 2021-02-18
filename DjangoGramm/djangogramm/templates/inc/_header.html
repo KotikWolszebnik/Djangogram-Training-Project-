@@ -1,7 +1,7 @@
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/media/photos/2021-02-10_02_38_33.png" alt="" width="40" 
+            <img src="/media/photos/2021-02-10_02_38_33.png" alt="" width="40"
                 height="40" class="d-inline-block align-top">
             DJANGOGRAMM
         </a>
@@ -11,16 +11,25 @@
             {% endblock title %}
         </h1>
         {% block buttons %}
+            {% if request.user.is_authenticated %}
+                <a href="/wall/{{ request.user.pk }}/">
+                My Page
+                {% if request.user.avatar %}
+                    <img src="{{ request.user.avatar.picture_itself.url }}" alt="" width="40"
+                        height="40" class="d-inline-block align-top">
+                {% endif %}
+                </a>
+                <a href="">My photos</a>
+                <a href="">My comments</a>
+                <a href="">Vy likes</a>
             <div class="d-inline-flex p-2 justify-content-end">
-                {% if request.user.is_authenticated %}
-                    {{ account.avatar }}
                     {% include 'inc/_edit_profile_button.html' %}
                     {% include 'inc/_logout_button.html' %}
                 {% else %}
                     {% include 'inc/_login_button.html' %}
                     {% include 'inc/_registration_button.html' %}
                 {% endif %}
-            <div>
+            </div>
         {% endblock buttons %}
     </div>
 </nav>
