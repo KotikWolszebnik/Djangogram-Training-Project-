@@ -40,6 +40,9 @@ class Post(Model):
     edited_time = DateTimeField(blank=True, null=True)
     author = ForeignKey(Account, on_delete=CASCADE, related_name='posts')
 
+    class Meta:
+        ordering = ['-posted_time']
+
     def __str__(self):
         txt = 'No text in the Post'
         if self.text:

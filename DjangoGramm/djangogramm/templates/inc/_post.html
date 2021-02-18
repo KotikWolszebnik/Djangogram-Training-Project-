@@ -23,7 +23,7 @@
         <div>
             {% for picture in post.pictures.all %}
             <div class="mx-auto mt-3">
-                <img src="{{ picture.picture_itself.url }}" class="card-img-top" alt="" >
+                <img src="{{ picture.picture_itself.url }}" class="card-img-top mx-auto" alt="" >
             </div>
             {% endfor %}
         </div>
