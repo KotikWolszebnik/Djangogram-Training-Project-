@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Confirm your registration</title>
+</head>
+
+<body>
+    <header>
+        <H1>Hi, {{ account.get_full_name }}, You've got successfull register in
+            DjangoGramm</H1>
+    </header>
+    <p><b>Your email:</b> {{ account.email }}</p>
+    <p><b>Your password:</b> {{ account.password }}</p>
+    <p><b>Please, go by the link for confirm your registration:</b></p>
+    <p><b><a href="/confirm/{{ unique_string }}/"></a></b></p>
+    <footer>
+        {% now %}
+    </footer>
+</body>
+
+</html>
