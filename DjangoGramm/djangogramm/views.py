@@ -1,6 +1,11 @@
+from random import choices
+from string import ascii_lowercase, digits
+
 from django.contrib.auth import login, logout
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_protect
 
 from .forms import LoginForm, RegistrationForm
@@ -19,6 +24,22 @@ def register(request):
         if form.is_valid:
             account = form.save()
             login(request, account)
+            unique_string = ''.join(choices(ascii_lowercase + digits, k=16))
+            account.confirmation_token = unique_string
+            account.save()
+            send_mail(
+                subject='Confirm registration',
+                message='',
+                from_email=None,
+                recipient_list=[account.email],
+                html_message=render_to_string(
+                    'confirmation_message.html',
+                    context=dict(
+                        account=account,
+                        unique_string=unique_string,
+                        ),
+                    ),
+                )
             return redirect(f'/wall/{account.pk}/')
     return render(request, 'registration.html', dict(form=form))
 
@@ -84,7 +105,7 @@ def logout_account(request):
             return redirect('login')
 
 
-def confirm_registration():
+def confirm_registration(uvique_string: str):
     pass
 
 

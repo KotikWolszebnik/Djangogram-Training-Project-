@@ -7,8 +7,7 @@
     <div class="card-body">
         <form action="/post/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <textarea required name="text" cols="81" rows="5"
-                placeholder="text"></textarea>
+            <textarea name="text" cols="81" rows="5" placeholder="text"></textarea>
             <p class="card-text">
                 <small class="text-muted">
                     You can add a pictures to your post

@@ -19,6 +19,7 @@ class Account(AbstractUser):
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=True, null=True)
     about_yourself = TextField(blank=True)
+    confirmation_token = TextField(blank=True, null=True)
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
@@ -71,6 +72,12 @@ class Picture(Model):
     avatar_of = OneToOneField(
         Account, on_delete=SET_NULL, blank=True, null=True, related_name='avatar')
 
+    class Meta:
+        ordering = ['-loading_time']
+
+    def __str__(self):
+        return f'< Picture : {self.id} >'
+
     def save(self, *args, **kwargs):
         if not self.id:
             is_unique = False
@@ -89,8 +96,12 @@ class Comment(Model):
     post = ForeignKey(Post, on_delete=CASCADE, related_name='comments')
     author = ForeignKey(Account, on_delete=CASCADE, related_name='comments')
 
+    class Meta:
+        ordering = ['posted_time']
+
     def __str__(self):
-        return f'{self.author}, {self.text}, {self.posted_time}'
+        txt = self.text[:10]
+        return f'< Comment : {self.author.get_full_name} | {txt}... >'
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -110,8 +121,11 @@ class Like(Model):
     author = ForeignKey(Account, on_delete=CASCADE, related_name='likes')
     time = DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-time']
+
     def __str__(self):
-        return f'{self.author}, {self.time}'
+        return f'< Like : {self.author.get_full_name()} | {self.time}>'
 
     def save(self, *args, **kwargs):
         if not self.id:
