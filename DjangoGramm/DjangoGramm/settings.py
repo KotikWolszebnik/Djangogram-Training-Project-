@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'ct%+p0&vih%@8ywn+v^znkee_gh5v@pt3ujf^42c_wk+ib!681'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -122,6 +122,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = join(BASE_DIR, 'static')
+
 MEDIA_ROOT = join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
@@ -139,4 +141,3 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 
 EMAIL_USE_SSL = True
-
