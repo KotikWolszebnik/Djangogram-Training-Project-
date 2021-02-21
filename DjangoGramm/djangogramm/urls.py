@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import (delete_avatar, delete_post, edit_profile, login_account,
-                    logout_account, post, register, setup_avatar, show_wall, confirm_registration)
+from .views import (confirm_registration, delete_avatar, delete_post,
+                    edit_profile, login_account, logout_account, post,
+                    register, setup_avatar, show_wall)
 
 urlpatterns = [
     path('', login_account, name='login'),

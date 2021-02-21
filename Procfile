@@ -1,1 +1,1 @@
-web: gunicorn DjangoGramm.DjangoGramm.wsgi
+web: gunicorn --pythonpath DjangoGramm/src DjangoGramm.wsgi
