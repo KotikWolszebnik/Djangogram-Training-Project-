@@ -106,11 +106,12 @@ def logout_account(request):
             return redirect('login')
 
 
-def confirm_registration(request, uvique_string: str):
+def confirm_registration(request, unique_string: str):
     if request.user.is_authenticated:
-        if request.user.confirmation_token == uvique_string:
+        if request.user.confirmation_token == unique_string:
             request.user.reg_confirmed_date = now()
-    
+            request.user.save()
+            return redirect(f'/wall/{request.user.pk}/')
 
 
 @csrf_protect
