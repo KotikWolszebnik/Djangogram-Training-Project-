@@ -14,8 +14,8 @@
         {% endif %}
     {% endblock postmaking %}
 
-{% if not request.user.is_authenticated %}
-{% elif request.user == account %}
+
+{% if request.user == account %}
     {% for post in account.posts.all %}
         {% include 'inc/_post.html' %}
     {% endfor %}
