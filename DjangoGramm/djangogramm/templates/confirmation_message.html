@@ -14,7 +14,7 @@
     <p><b>Your email:</b> {{ account.email }}</p>
     <p><b>Your password:</b> {{ account.password }}</p>
     <p><b>Please, go by the link for confirm your registration:</b></p>
-    <p><b><a href="https://djgramm.herokuapp.com/confirm/{{ unique_string }}/"></a></b></p>
+    <a href="https://djgramm.herokuapp.com/confirm/{{ unique_string }}/"></a>
     <footer>
         {% now "DATETIME_FORMAT" %}
     </footer>
