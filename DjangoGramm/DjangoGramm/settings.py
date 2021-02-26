@@ -129,15 +129,13 @@ MEDIA_ROOT = join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-DEFAULT_FROM_EMAIL = ''
-
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.yandex.ru'
 
 EMAIL_PORT = 465
 
-EMAIL_HOST_USER = 'nutmegraw@gmail.com'
+EMAIL_HOST_USER = 'nutmegraw@yandex.ru'
 
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'ptqjxqsdajomecup'
 
 EMAIL_USE_TLS = False
 

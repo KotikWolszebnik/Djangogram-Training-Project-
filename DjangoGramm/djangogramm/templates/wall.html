@@ -14,9 +14,15 @@
         {% endif %}
     {% endblock postmaking %}
 
-    {% block posts %}
-        {% for post in account.posts.all %}
-            {% include 'inc/_post.html' %}
-        {% endfor %}
-    {% endblock posts %}
+{% if not request.user.is_authenticated %}
+{% elif request.user == account %}
+    {% for post in account.posts.all %}
+        {% include 'inc/_post.html' %}
+    {% endfor %}
+{% elif not request.user.reg_confirmed_date %}
+{% else %}
+    {% for post in account.posts.all %}
+        {% include 'inc/_post.html' %}
+    {% endfor %}
+{% endif %}
 

@@ -1,33 +1,25 @@
  <div class="col-md-4">
     <div class="card mb-3">
         {% if request.user == account %}
-            <div class="card-header">
-                <form action="/avatar/delete/" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-close" aria-label="Close"></button>
-                </form>
-                <form enctype="multipart/form-data" action="/avatar/" method="POST">
-                    {% csrf_token %}
-                    <p class="card-text">
-                        <small class="text-muted">
-                            Set-up a profile's picture
-                        </small>
-                    </p>
-                    <input required type="file" accept="image/*" name="avatar">
-                    <button type="submit">upload</button>
-                </form>
-            </div>
+            {% include 'inc/_avatar_operations.html' %}
         {% endif %}
-        {% if account.avatar %}
+
+        {% if not request.user.is_authenticated %}
+            {% include 'inc/_stub_image.html' %}
+        {% elif not account.avatar %}
+            {% include 'inc/_stub_image.html' %}
+        {% elif request.user == account %}
             <div class="mx-auto mt-3">
                 <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top" alt="" width="250" height="300">
             </div>
+        {% elif not request.user.reg_confirmed_date %}
+            {% include 'inc/_stub_image.html' %}
         {% else %}
             <div class="mx-auto mt-3">
-                <img src="/media/photos/unknown-user.jpg" alt="" width="250" 
-                height="300">
+                <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top" alt="" width="250" height="300">
             </div>
         {% endif %}
+
         <div class="card-body">
             <h5 class="card-title">
                 {{ account.get_full_name }}

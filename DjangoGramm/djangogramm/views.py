@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_protect
 
 from .forms import LoginForm, RegistrationForm
@@ -30,7 +31,7 @@ def register(request):
             send_mail(
                 subject='Confirm registration',
                 message='',
-                from_email=None,
+                from_email='nutmegraw@yandex.ru',
                 recipient_list=[account.email],
                 html_message=render_to_string(
                     'confirmation_message.html',
@@ -105,8 +106,11 @@ def logout_account(request):
             return redirect('login')
 
 
-def confirm_registration(uvique_string: str):
-    pass
+def confirm_registration(request, uvique_string: str):
+    if request.user.is_authenticated:
+        if request.user.confirmation_token == uvique_string:
+            request.user.reg_confirmed_date = now()
+    
 
 
 @csrf_protect

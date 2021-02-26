@@ -17,7 +17,7 @@ class Account(AbstractUser):
     REQUIRED_FIELDS = []
     username = None
     email = EmailField(unique=True)
-    reg_confirmed_date = DateTimeField(auto_now=True, null=True)
+    reg_confirmed_date = DateTimeField(auto_now=False, null=True)
     about_yourself = TextField(blank=True)
     confirmation_token = TextField(blank=True, null=True)
 
