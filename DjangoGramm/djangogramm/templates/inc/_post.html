@@ -1,14 +1,14 @@
 {% block post_content %}
-    <div class="card mb-3">
+    <div class="card border-success mb-3">
         <div class="card-header">
             <div class="row">
-                <div class="d-inline-flex">
+                <div class="col justify-content-start">
                     Created at: {{ post.posted_time }}
                     {% if post.edited_time %}
                         <b>edited</b>
                     {% endif %}
                 </div>
-                <div class="d-inline-flex p-2 justify-content-end">
+                <div class="col d-inline-flex justify-content-end">
                     {% if post.author == request.user %}
                         {% block post_buttons %}
                             {% include 'inc/_close_button.html' %}
@@ -32,6 +32,7 @@
         </div>
     </div>
 {% endblock post_content %}
+
 {% block post_comments %}
     {% for comment in post.comments.all %}
         {% include 'inc/_comments.html' %}

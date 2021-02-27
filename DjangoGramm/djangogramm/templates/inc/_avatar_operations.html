@@ -1,16 +1,14 @@
 <div class="card-header">
-    <form action="/avatar/delete/" method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn-close" aria-label="Close"></button>
-    </form>
-    <form enctype="multipart/form-data" action="/avatar/" method="POST">
-        {% csrf_token %}
-        <p class="card-text">
-            <small class="text-muted">
-                Set-up a profile's picture
-            </small>
-        </p>
-        <input required type="file" accept="image/*" name="avatar">
-        <button type="submit">upload</button>
-    </form>
+    <div class="row">
+        <form enctype="multipart/form-data" action="/avatar/" method="POST">
+            {% csrf_token %}
+            <p class="card-text">
+                <small class="text-muted">
+                    Set-up a profile's picture
+                </small>
+            </p>
+            <input required type="file" accept="image/*" name="avatar">
+            <button type="submit">upload</button>
+        </form>
+    </div>
 </div>

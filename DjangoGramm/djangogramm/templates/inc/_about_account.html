@@ -1,5 +1,5 @@
  <div class="col-md-4">
-    <div class="card mb-3">
+    <div class="card border-success mb-3">
         {% if request.user == account %}
             {% include 'inc/_avatar_operations.html' %}
         {% endif %}
@@ -9,8 +9,13 @@
         {% elif not account.avatar %}
             {% include 'inc/_stub_image.html' %}
         {% elif request.user == account %}
-            <div class="mx-auto mt-3">
-                <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top" alt="" width="250" height="300">
+            <div class="mx-auto mt-3 d-inline-flex justify-content-end">
+                <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top"
+                    alt="" width="250" height="300">
+                <form action="/avatar/delete/" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-close" aria-label="Close"></button>
+                </form>
             </div>
         {% elif not request.user.reg_confirmed_date %}
             {% include 'inc/_stub_image.html' %}
