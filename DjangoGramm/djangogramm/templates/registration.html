@@ -14,7 +14,10 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                     <div class="d-inline-flex p-2">
-                        <button type="submit" class="btn btn-success">OK</button>
+                        <button type="submit" class="btn btn-success">
+                            OK
+                            <i class="bi bi-check2"></i>
+                        </button>
                     </form>
                         {% include 'inc/_login_button.html' %}
                     </div>

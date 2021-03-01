@@ -66,7 +66,9 @@ def show_wall(request, account_id: int):
     if request.user.is_authenticated:
         if request.method == 'POST':
             if request.POST.get('edit_profile'):
-                data = dict(account=account, edit_profile=True)
+                data['edit_profile'] = True
+            elif request.POST.get('edit_post_id'):
+                data['edit_post_id'] = int(request.POST.get('edit_post_id'))
     return render(request, 'wall.html', data)
 
 
@@ -74,20 +76,21 @@ def show_wall(request, account_id: int):
 def post(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            post = Post.objects.create(
-                id=None,
-                author=request.user,
-                text=request.POST.get('text'),
-            )
-            post.save()
-            for picture in request.FILES.getlist('pictures'):
-                Picture(
-                    picture_itself=picture,
-                    uploader=request.user,
-                    post=post,
-                ).save()
-            return redirect(f'/wall/{request.user.pk}/')
-    return render(request, 'wall.html')
+            if request.POST.get('text') or request.FILES.getlist('pictures'):
+                post = Post.objects.create(
+                    id=None,
+                    author=request.user,
+                    text=request.POST.get('text'),
+                )
+                post.save()
+                for picture in request.FILES.getlist('pictures'):
+                    Picture(
+                        picture_itself=picture,
+                        uploader=request.user,
+                        post=post,
+                    ).save()
+                return redirect(f'/wall/{request.user.pk}/')
+        return redirect(f'/wall/{request.user.pk}/')
 
 
 @csrf_protect
@@ -154,3 +157,22 @@ def delete_avatar(request):
                 pass
             finally:
                 return redirect(f'/wall/{request.user.pk}/')
+
+
+@csrf_protect
+def edit_post(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if request.POST.get('text') or request.FILES.getlist('pictures'):
+                post = Post.objects.get(pk=int(request.POST.get('post_id')))
+                post.text = request.POST.get('text')
+                post.edited_time = now()
+                post.save()
+                for picture in request.FILES.getlist('pictures'):
+                    Picture(
+                        picture_itself=picture,
+                        uploader=request.user,
+                        post=post,
+                    ).save()
+                return redirect(f'/wall/{request.user.pk}/')
+        return redirect(f'/wall/{request.user.pk}/')

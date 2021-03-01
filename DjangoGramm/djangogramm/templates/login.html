@@ -7,14 +7,17 @@
 
     {% block sidebar %}
         <div class="col-md-4">
-            <div class="card border-success mb-3" style="width: 18rem;">
+            <div class="card border-success mb-3" style="width: 20rem;">
                 <div class="card-body">
                     <h5 class="card-title">Log in</h5>
                     <form action="/login/" method="POST">
                         {% csrf_token %}
                         {{ form.as_p }}
                     <div class="d-inline-flex p-2">
-                        <button type="submit" class="btn btn-success mx-3">OK</button>
+                        <button type="submit" class="btn btn-success mx-3">
+                            OK
+                            <i class="bi bi-check2"></i>
+                        </button>
                     </form>
                         {% include 'inc/_registration_button.html' %}
                     </div>

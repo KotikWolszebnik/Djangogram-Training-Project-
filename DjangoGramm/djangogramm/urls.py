@@ -16,8 +16,8 @@ Including another URLconf
 from django.urls import path
 
 from .views import (confirm_registration, delete_avatar, delete_post,
-                    edit_profile, login_account, logout_account, post,
-                    register, setup_avatar, show_wall)
+                    edit_post, edit_profile, login_account, logout_account,
+                    post, register, setup_avatar, show_wall)
 
 urlpatterns = [
     path('', login_account, name='login'),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('wall/<int:account_id>/', show_wall, name='wall'),
     path('confirm/<str:unique_string>/', confirm_registration, name='confirm'),
     path('post/', post, name='post'),
+    path('post/edit/', edit_post, name='edit_post'),
     path('post/delete/', delete_post, name='delete_post'),
     path('avatar/', setup_avatar, name='avatar'),
     path('avatar/delete/', delete_avatar, name='delete_avatar'),

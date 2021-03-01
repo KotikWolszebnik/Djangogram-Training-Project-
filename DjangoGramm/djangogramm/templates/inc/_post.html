@@ -11,6 +11,7 @@
                 <div class="col d-inline-flex justify-content-end">
                     {% if post.author == request.user %}
                         {% block post_buttons %}
+                            {% include 'inc/_edit_button.html' %}
                             {% include 'inc/_close_button.html' %}
                         {% endblock post_buttons %}
                     {% endif %}
@@ -22,13 +23,20 @@
         </div>
         <div>
             {% for picture in post.pictures.all %}
-            <div class="mx-auto mt-3">
-                <img src="{{ picture.picture_itself.url }}" class="card-img-top mx-auto" alt="" >
-            </div>
+                <div class="mx-3">
+                    <img src="{{ picture.picture_itself.url }}" class="card-img mt-3" widh="80" >
+                </div>
             {% endfor %}
         </div>
         <div class="card-footer">
-
+            <form action="/post/edit/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id" value={{ post.pk }}>
+                <button type="submit" class="btn btn-default">
+                    <i class="bi bi-gem"></i>
+                </button>
+                <i class="bi bi-chat-dots"></i>
+            </form>
         </div>
     </div>
 {% endblock post_content %}

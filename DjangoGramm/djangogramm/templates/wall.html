@@ -17,7 +17,11 @@
     {% block posts %}
         {% if request.user == account %}
             {% for post in account.posts.all %}
-                {% include 'inc/_post.html' %}
+                {% if post.pk == edit_post_id %}
+                    {% include 'inc/_edit_post.html' %}
+                {% else %}
+                    {% include 'inc/_post.html' %}
+                {% endif  %}
             {% endfor %}
         {% elif not request.user.reg_confirmed_date %}
         {% else %}
