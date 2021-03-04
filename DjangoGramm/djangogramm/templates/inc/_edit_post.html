@@ -1,0 +1,26 @@
+{% extends 'inc/_postmaking.html' %}
+
+{% block action %}/post/edit/{% endblock action %}
+
+{% block post_header %}
+    Change the post
+{% endblock post_header %}
+
+{% block post_id %}
+    <input type="hidden" name="post_id" value={{ post.pk }}>
+{% endblock post_id %}
+
+{% block post_text %}
+    <textarea name="text" cols="81" rows="5" placeholder="text">{{ post.text }}</textarea>
+{% endblock post_text %}
+
+{% block about_pictures %}
+    You can add or delete pictures from your post
+{% endblock about_pictures %}
+
+{% block post_pictures %}
+        {% for picture in post.pictures.all %}
+        
+            <img src="{{ picture.picture_itself.url }}" class="img-thumbnail mx-auto" width="100">
+        {% endfor %}
+{% endblock post_pictures %}
