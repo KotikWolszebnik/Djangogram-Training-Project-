@@ -18,7 +18,7 @@ class Account(AbstractUser):
     username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
-    about_yourself = TextField(blank=True)
+    about_yourself = TextField(max_length=150, blank=True)
     confirmation_token = TextField(blank=True, null=True)
 
     def __str__(self):
@@ -36,7 +36,7 @@ class Account(AbstractUser):
 
 class Post(Model):
     id = IntegerField(primary_key=True, unique=True)
-    text = TextField(blank=True)
+    text = TextField(max_length=2200, blank=True)
     posted_time = DateTimeField(auto_now_add=True, editable=False)
     edited_time = DateTimeField(blank=True, null=True)
     author = ForeignKey(Account, on_delete=CASCADE, related_name='posts')
@@ -66,7 +66,7 @@ class Picture(Model):
         Account, on_delete=SET_NULL, null=True, related_name='uploaded_pictures')
     loading_time = DateTimeField(auto_now_add=True)
     picture_itself = ImageField(upload_to=PICTURE_PATH)
-    description = TextField(blank=True)
+    description = TextField(max_length=150, blank=True)
     post = ForeignKey(
         Post, on_delete=SET_NULL, blank=True, null=True, related_name='pictures')
     avatar_of = OneToOneField(
@@ -90,7 +90,7 @@ class Picture(Model):
 
 class Comment(Model):
     id = IntegerField(primary_key=True, unique=True)
-    text = TextField()
+    text = TextField(max_length=1000)
     posted_time = DateTimeField(auto_now_add=True)
     edited_time = DateTimeField(auto_now=True, blank=True, null=True)
     post = ForeignKey(Post, on_delete=CASCADE, related_name='comments')
