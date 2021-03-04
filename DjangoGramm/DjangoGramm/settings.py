@@ -121,24 +121,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
 
+STATIC_URL = '/static/'
 STATIC_ROOT = join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    join(BASE_DIR, 'djangogramm/static'),
+]
 
 MEDIA_ROOT = join(BASE_DIR, 'media')
-
 MEDIA_URL = '/media/'
 
 EMAIL_HOST = 'smtp.yandex.ru'
-
 EMAIL_PORT = 465
-
 EMAIL_HOST_USER = 'nutmegraw@yandex.ru'
-
 EMAIL_HOST_PASSWORD = 'ptqjxqsdajomecup'
-
 EMAIL_USE_TLS = False
-
 EMAIL_USE_SSL = True
 
 # Activate Django-Heroku.
