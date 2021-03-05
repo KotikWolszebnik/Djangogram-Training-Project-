@@ -11,7 +11,7 @@
         {% elif request.user == account %}
             <div class="mx-auto mt-3 d-inline-flex justify-content-end">
                 <img src="{{ account.avatar.picture_itself.url }}" class="card-img-top"
-                    alt="" width="250" height="300">
+                    alt="" width="250">
                 <form action="/avatar/delete/" method="POST">
                     {% csrf_token %}
                     <button type="submit" class="btn-close" aria-label="Close"></button>
