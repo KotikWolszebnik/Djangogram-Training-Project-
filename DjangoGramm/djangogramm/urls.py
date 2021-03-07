@@ -20,7 +20,7 @@ from .views import (confirm_registration, delete_avatar, delete_post,
                     post, register, setup_avatar, show_wall)
 
 urlpatterns = [
-    path('', login_account, name='login'),
+    path('', login_account),
     path('login/', login_account, name='login'),
     path('logout/', logout_account, name='logout'),
     path('registration/', register, name='registration'),
@@ -30,6 +30,6 @@ urlpatterns = [
     path('post/', post, name='post'),
     path('post/edit/', edit_post, name='edit_post'),
     path('post/delete/', delete_post, name='delete_post'),
-    path('avatar/', setup_avatar, name='avatar'),
+    path('avatar/', setup_avatar, name='avatar'),  # Not tested
     path('avatar/delete/', delete_avatar, name='delete_avatar'),
 ]
