@@ -147,6 +147,25 @@ class YourTestClass(TestCase):
         resp_str = str(resp.content, encoding='utf-8')
         self.assertIn(post_text, resp_str)
 
+    def test_wall_post_and_about_editing_regims(self):
+        resp = self.register_confirm_and_post()
+        resp_str = str(resp.content, encoding='utf-8')
+        about_text = '<textarea required name="about_yourself" cols="35" rows="10" placeholder="About yourself:"></textarea>\n'
+        self.assertNotIn(about_text, resp_str)
+        resp = self.client.post(
+            f'/wall/{resp.wsgi_request.user.pk}/',
+            data=dict(edit_profile=True),
+        )
+        resp_str = str(resp.content, encoding='utf-8')
+        self.assertIn(about_text, resp_str)
+        resp = self.client.post(
+            f'/wall/{resp.wsgi_request.user.pk}/',
+            data=dict(edit_post_id=1234567890),
+        )
+        resp_str = str(resp.content, encoding='utf-8')
+        edit_post_text = '<textarea name="text" cols="81" rows="5" placeholder="text">'
+        self.assertIn(edit_post_text, resp_str)
+
     def test_edit_post(self):
         resp = self.register_confirm_and_post()
         resp_str = str(resp.content, encoding='utf-8')
