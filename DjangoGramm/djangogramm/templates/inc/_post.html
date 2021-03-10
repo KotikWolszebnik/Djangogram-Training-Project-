@@ -1,3 +1,4 @@
+{% load dj_extras %}
 {% block post_content %}
     <div class="card border-success mb-3">
         <div class="card-header">
@@ -29,11 +30,17 @@
             {% endfor %}
         </div>
         <div class="card-footer">
-            <form action="/post/edit/" method="POST">
+            <form action="/post/like/" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="id" value={{ post.pk }}>
                 <button type="submit" class="btn btn-default">
-                    <i class="bi bi-gem"></i>
+                    {% for like in post.likes.all %}
+                        {% if like.author == request.user %}
+                            <i class="bi bi-suit-heart-fill" style="color: forestgreen;"></i>
+                        {% endif %}
+                    {% empty %}
+                        <i class="bi bi-suit-heart"></i>
+                    {% endfor %}
                 </button>
                 <i class="bi bi-chat-dots"></i>
             </form>
