@@ -28,7 +28,7 @@
             <h5 class="card-title">
                 {{ account.get_full_name }}
             </h5>
-            {% if edit_profile %}
+            {% if bio_form %}
                 {% include 'inc/_profile_editing.html' %}
             {% else %}
                 {% include 'inc/_profile_info.html' %}

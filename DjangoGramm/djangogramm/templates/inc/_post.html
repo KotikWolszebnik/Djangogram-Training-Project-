@@ -1,15 +1,18 @@
-{% load dj_extras %}
 {% block post_content %}
     <div class="card border-success mb-3">
         <div class="card-header">
             <div class="row">
                 <div class="col justify-content-start">
-                    Created at: {{ post.posted_time }}
+                    Created at: {{ post.created_at }}
                     {% if post.edited_time %}
                         <b>edited</b>
                     {% endif %}
                 </div>
                 <div class="col d-inline-flex justify-content-end">
+                    <i class="bi bi-link-45deg"></i>
+                    <a href="http://{{ request.get_host }}/post/get/{{ post.slug }}">
+                        {{ post.slug }}
+                    </a>
                     {% if post.author == request.user %}
                         {% block post_buttons %}
                             {% include 'inc/_edit_button.html' %}
@@ -30,20 +33,29 @@
             {% endfor %}
         </div>
         <div class="card-footer">
-            <form action="/post/like/" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="id" value={{ post.pk }}>
-                <button type="submit" class="btn btn-default">
-                    {% for like in post.likes.all %}
-                        {% if like.author == request.user %}
-                            <i class="bi bi-suit-heart-fill" style="color: forestgreen;"></i>
-                        {% endif %}
-                    {% empty %}
-                        <i class="bi bi-suit-heart"></i>
-                    {% endfor %}
-                </button>
-                <i class="bi bi-chat-dots"></i>
-            </form>
+            <div class="row">
+                <div class="col justify-content-start">
+                    <form action="/post/like/" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value={{ post.pk }}>
+                        <button type="submit" class="btn btn-default">
+                            {% for like in post.likes.all %}
+                                {% if like.author == request.user %}
+                                    <i class="bi bi-suit-heart-fill" style="color: forestgreen;"></i>
+                                {% endif %}
+                            {% empty %}
+                                <i class="bi bi-suit-heart"></i>
+                            {% endfor %}
+                        </button>
+                        <i class="bi bi-chat-dots"></i>
+                    </form>
+                </div>
+                {% if by_link %}
+                    <div class="col d-inline-flex justify-content-end">
+                        <small style="color:forestgreen;">You've got this post by link</small>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock post_content %}

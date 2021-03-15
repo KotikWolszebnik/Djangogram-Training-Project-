@@ -7,7 +7,7 @@
 {% endblock post_header %}
 
 {% block post_id %}
-    <input type="hidden" name="post_id" value={{ post.pk }}>
+    <input type="hidden" name="post_slug" value="{{ post.slug }}">
 {% endblock post_id %}
 
 {% block post_text %}
@@ -20,7 +20,6 @@
 
 {% block post_pictures %}
         {% for picture in post.pictures.all %}
-        
             <img src="{{ picture.picture_itself.url }}" class="img-thumbnail mx-auto" width="100">
         {% endfor %}
 {% endblock post_pictures %}

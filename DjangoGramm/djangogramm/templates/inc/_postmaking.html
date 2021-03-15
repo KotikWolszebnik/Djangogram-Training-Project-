@@ -7,23 +7,13 @@
     </div>
 
     <div class="card-body">
-        <form action="{% block action %}/post/{% endblock action %}" method="POST" enctype="multipart/form-data">
+        <form action="{% block action %}/post/create/{% endblock action %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
             {% block post_id %}{% endblock post_id %}
             
-            {% block post_text %}
-                <textarea name="text" cols="81" rows="5" placeholder="text"></textarea>
-            {% endblock post_text %}
-            
-            <p class="card-text">
-                <small class="text-muted">
-                    {% block about_pictures %}
-                        You can add a pictures to your post
-                    {% endblock about_pictures %}
-                </small>
-            </p>
-            <input multiple type="file" accept="image/*" name="pictures">
+            {{ post_form.as_p }}
+
             {% block post_pictures %}
             
             {% endblock post_pictures %}

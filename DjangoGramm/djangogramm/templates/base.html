@@ -17,6 +17,10 @@
 		{% block header %}
 			{% include 'inc/_header.html' %}
 		{% endblock header %}
+
+		{% if messages %}
+			{% include 'inc/_messages.html' %}
+		{% endif %}
 	</header>
 
 	<div class="container mt-3">

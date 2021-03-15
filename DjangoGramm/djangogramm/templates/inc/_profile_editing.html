@@ -3,9 +3,9 @@
         Add information about yourself
     </small>
 </p>
-<form action="/profile/" method="POST">
+<form action="/bio/edit/" method="POST">
     {% csrf_token %}
-    <textarea required name="about_yourself" cols="35" rows="10" placeholder="About yourself:">{{ request.user.about_yourself }}</textarea>
+    {{ bio_form.as_p }}
     <button class="btn btn-success mx-3" type="submit">
         Save
     </button>

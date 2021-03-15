@@ -6,7 +6,7 @@
     </p>
 {% elif request.user == account %}
     <p class="card-text">
-        {{ account.about_yourself }}
+        {{ account.bio }}
     </p>
     <p class="card-text">
         Registrated: 
@@ -23,7 +23,7 @@
     </p>
 {% else %}
     <p class="card-text">
-        {{ account.about_yourself }}
+        {{ account.bio }}
     </p>
     <p class="card-text">
         Registrated: 

@@ -16,13 +16,17 @@
 
     {% block posts %}
         {% if request.user == account %}
-            {% for post in account.posts.all %}
-                {% if post.pk == edit_post_id %}
-                    {% include 'inc/_edit_post.html' %}
-                {% else %}
-                    {% include 'inc/_post.html' %}
-                {% endif  %}
-            {% endfor %}
+            {% if post %}
+                {% include 'inc/_post.html' %}
+            {% else %}
+                {% for post in account.posts.all %}
+                    {% if post.slug == edit_post_slug %}
+                        {% include 'inc/_edit_post.html' %}
+                    {% else %}
+                        {% include 'inc/_post.html' %}
+                    {% endif  %}
+                {% endfor %}
+            {% endif  %}
         {% elif not request.user.reg_confirmed_date %}
         {% else %}
             {% for post in account.posts.all %}

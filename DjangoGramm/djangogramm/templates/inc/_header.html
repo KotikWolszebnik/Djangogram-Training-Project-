@@ -12,16 +12,17 @@
         </h1>
         {% block buttons %}
             {% if request.user.is_authenticated %}
-                <a href="/wall/{{ request.user.pk }}/">
+                <a href="/wall/{{ request.user.slug }}/">
                 My Page
                 {% if request.user.avatar %}
                     <img src="{{ request.user.avatar.picture_itself.url }}" alt="" width="40"
                         height="40" class="d-inline-block align-top">
                 {% endif %}
                 </a>
-                <a href="">My photos</a>
-                <a href="">My comments</a>
-                <a href="">Vy likes</a>
+                <a href="/pictures/">My photos</a>
+                <a href="/comments/">My comments</a>
+                <a href="/likes/">My likes</a>
+                <a href="/accounts/">Other users</a>
             <div class="d-inline-flex p-2 justify-content-end">
                     {% include 'inc/_edit_profile_button.html' %}
                     {% include 'inc/_logout_button.html' %}
