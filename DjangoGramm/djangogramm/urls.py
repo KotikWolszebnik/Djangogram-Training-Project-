@@ -15,21 +15,24 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import (confirm_registration, delete_avatar, delete_post,
-                    edit_post, edit_profile, login_account, logout_account,
-                    post, register, setup_avatar, show_wall)
+from .views import (add_post, auth_need, confirm_registration, delete_avatar,
+                    delete_post, edit_bio, edit_post, get_post_by_slug,
+                    login_account, logout_account, register, setup_avatar,
+                    show_wall)
 
 urlpatterns = [
     path('', login_account),
     path('login/', login_account, name='login'),
     path('logout/', logout_account, name='logout'),
     path('registration/', register, name='registration'),
-    path('profile/', edit_profile, name='profile'),
-    path('wall/<int:account_id>/', show_wall, name='wall'),
+    path('bio/edit/', edit_bio, name='profile'),
+    path('wall/<int:account_slug>/', show_wall, name='wall'),
     path('confirm/<str:unique_string>/', confirm_registration, name='confirm'),
-    path('post/', post, name='post'),
+    path('post/get/<str:post_slug>/', get_post_by_slug, name='get_post_by_slug'),
+    path('post/create/', add_post, name='create_post'),
     path('post/edit/', edit_post, name='edit_post'),
     path('post/delete/', delete_post, name='delete_post'),
-    path('avatar/', setup_avatar, name='avatar'),  # Not tested
+    path('avatar/create/', setup_avatar, name='create_avatar'),  # Not tested
     path('avatar/delete/', delete_avatar, name='delete_avatar'),
+    path('auth_need/', auth_need, name='auth_need'),
 ]
