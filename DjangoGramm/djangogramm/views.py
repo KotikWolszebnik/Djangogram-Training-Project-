@@ -1,33 +1,41 @@
-from random import choices
-from string import ascii_lowercase, digits
-
 from django.contrib.auth import login, logout
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import \
+    default_token_generator as token_generator
+from django.contrib.messages import error, success
 from django.core.mail import send_mail
+from django.http import (HttpResponseForbidden, HttpResponseNotAllowed,
+                         HttpResponseNotFound)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.timezone import now
-from django.views.decorators.csrf import csrf_protect
 
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, BioChangeForm, PostForm
 from .models import Account, Picture, Post
 
+
+def POST_method_required(func):
+    def wrapper(request):
+        if request.method == 'POST':
+            return func(request)
+        return HttpResponseNotAllowed(['POST'])
+    return wrapper
 # Create your views here.
 
 
-@csrf_protect
+def auth_need(request):
+    return HttpResponseForbidden(
+        content=b'You must be authenticated for doing this',
+        )
+
+
 def register(request):
-    if request.user.is_authenticated:
-        logout(request)
     form = RegistrationForm()
+    page = render(request, 'registration.html', dict(form=form))
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid:
             account = form.save()
-            login(request, account)
-            unique_string = ''.join(choices(ascii_lowercase + digits, k=16))
-            account.confirmation_token = unique_string
-            account.save()
             send_mail(
                 subject='Confirm registration',
                 message='',
@@ -36,143 +44,157 @@ def register(request):
                 html_message=render_to_string(
                     'confirmation_message.html',
                     context=dict(
+                        host=request.get_host(),
                         account=account,
-                        unique_string=unique_string,
+                        unique_string=token_generator.make_token(account),
                         ),
                     ),
                 )
-            return redirect(f'/wall/{account.pk}/')
-    return render(request, 'registration.html', dict(form=form))
+            login(request, account)
+            success(request, 'register_success')
+            return redirect(f'/wall/{account.slug}/')
+        error(request, 'validation_error!')
+    return page
 
 
-@csrf_protect
 def login_account(request):
-    if request.user.is_authenticated:
-        logout(request)
     form = LoginForm()
+    page = render(request, 'login.html', dict(form=form))
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
             account = form.get_user()
             login(request, account)
-            return redirect(f'/wall/{account.pk}/')
-    return render(request, 'login.html', dict(form=form))
+            return redirect(f'/wall/{account.slug}/')
+        error(request, 'account_not_exist!')
+        return page
+    return page
 
 
-@csrf_protect
-def show_wall(request, account_id: int):
-    account = Account.objects.get(pk=account_id)
-    data = dict(account=account)
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            if request.POST.get('edit_profile'):
-                data['edit_profile'] = True
-            elif request.POST.get('edit_post_id'):
-                data['edit_post_id'] = int(request.POST.get('edit_post_id'))
-    return render(request, 'wall.html', data)
-
-
-@csrf_protect
-def post(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            if request.POST.get('text') or request.FILES.getlist('pictures'):
-                post = Post.objects.create(
-                    id=None,
-                    author=request.user,
-                    text=request.POST.get('text'),
-                )
-                post.save()
-                for picture in request.FILES.getlist('pictures'):
-                    Picture(
-                        picture_itself=picture,
-                        uploader=request.user,
-                        post=post,
-                    ).save()
-                return redirect(f'/wall/{request.user.pk}/')
-        return redirect(f'/wall/{request.user.pk}/')
-
-
-@csrf_protect
-def delete_post(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            Post.objects.get(pk=request.POST.get('id')).delete()
-            return redirect(f'/wall/{request.user.pk}/')
-
-
-@csrf_protect
-def logout_account(request):
-    if request.method == 'POST':
+def show_wall(request, account_slug: int):
+    if Account.objects.filter(slug=account_slug).exists():
+        account = Account.objects.get(slug=account_slug)
+        data = dict(account=account, post_form=PostForm())
         if request.user.is_authenticated:
-            logout(request)
-            return redirect('login')
+            if request.method == 'POST':
+                if request.POST.get('edit_profile'):
+                    data['bio_form'] = BioChangeForm(instance=request.user)
+                elif request.POST.get('edit_post_slug'):
+                    data['edit_post_slug'] = request.POST.get('edit_post_slug')
+        return render(request, 'wall.html', data)
+    return HttpResponseNotFound
 
 
+@login_required
+def get_post_by_slug(request, post_slug: str):
+    if Post.objects.filter(slug=post_slug).exists():
+        post = Post.objects.get(slug=post_slug)
+        if post.author == request.user or request.user.reg_confirmed_date():
+            return render(
+                request, 'wall.html', dict(
+                    account=post.author, post=post, by_link=True,
+                ),
+            )
+        error(request, 'not_confirmed!')
+        return render(request, 'wall.html', dict(account=post.author))
+    return HttpResponseNotFound()
+
+
+@login_required
 def confirm_registration(request, unique_string: str):
-    if request.user.is_authenticated:
-        if request.user.confirmation_token == unique_string:
-            request.user.reg_confirmed_date = now()
-            request.user.save()
-            return redirect(f'/wall/{request.user.pk}/')
+    page = redirect(f'/wall/{request.user.slug}/')
+    if token_generator.check_token(request.user, unique_string):
+        request.user.reg_confirmed_date = now()
+        request.user.save()
+        success(request, 'confirm_success')
+        return page
+    error(request, 'confirm_fail!')
+    return page
 
 
-@csrf_protect
-def edit_profile(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            request.user.about_yourself = request.POST.get('about_yourself')
-            request.user.save()
-            return redirect(f'/wall/{request.user.pk}/')
+@POST_method_required
+@login_required
+def add_post(request):
+    page = redirect(f'/wall/{request.user.slug}/')
+    form = PostForm(data=request.POST, files=request.FILES)
+    if form.is_valid():
+        form.save(request)
+        return page
+    error(request, 'post_is_empty!')
+    return page
 
 
-@csrf_protect
+@POST_method_required
+@login_required
+def delete_post(request):
+    if Post.objects.filter(slug=request.POST.get('slug')).exists():
+        post = Post.objects.get(slug=request.POST.get('slug'))
+        if post.author == request.user:
+            post.delete()
+            return redirect(f'/wall/{request.user.slug}/')
+        return HttpResponseForbidden()
+    return HttpResponseNotFound()
+
+
+@POST_method_required
+@login_required
+def logout_account(request):
+    logout(request)
+    return redirect('login')
+
+
+@POST_method_required
+@login_required
+def edit_bio(request):
+    page = redirect(f'/wall/{request.user.slug}/')
+    form = BioChangeForm(request.POST, instance=request.user)
+    if form.is_valid:
+        form.save()
+        return page
+    error(request, 'validation_error!')
+    return page
+
+
+@POST_method_required
+@login_required
 def setup_avatar(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            try:
-                picture = Picture.objects.get(avatar_of=request.user)
-                picture.avatar_of = None
-                picture.save()
-            except ObjectDoesNotExist:
-                pass
-            finally:
-                Picture(
-                    picture_itself=request.FILES.get('avatar'),
-                    uploader=request.user,
-                    avatar_of=request.user,
-                ).save()
-                return redirect(f'/wall/{request.user.pk}/')
+    picture = Picture(
+        picture_itself=request.FILES.get('avatar'),
+        author=request.user,
+    )
+    picture.save()
+    request.user.avatar = picture
+    request.user.save()
+    return redirect(f'/wall/{request.user.slug}/')
 
 
-@csrf_protect
+@POST_method_required
+@login_required
 def delete_avatar(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            try:
-                picture = Picture.objects.get(avatar_of=request.user)
-                picture.avatar_of = None
-                picture.save()
-            except ObjectDoesNotExist:
-                pass
-            finally:
-                return redirect(f'/wall/{request.user.pk}/')
+    if request.user.avatar:
+        request.user.avatar.avatar_of = None
+        request.user.save()
+        return redirect(f'/wall/{request.user.slug}/')
+    return HttpResponseNotFound()
 
 
-@csrf_protect
+@POST_method_required
+@login_required
 def edit_post(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            if request.POST.get('text') or request.FILES.getlist('pictures'):
-                post = Post.objects.get(pk=int(request.POST.get('post_id')))
-                post.text = request.POST.get('text')
-                post.edited_time = now()
-                post.save()
-                for picture in request.FILES.getlist('pictures'):
-                    Picture(
-                        picture_itself=picture,
-                        uploader=request.user,
-                        post=post,
-                    ).save()
-                return redirect(f'/wall/{request.user.pk}/')
-        return redirect(f'/wall/{request.user.pk}/')
+    page = redirect(f'/wall/{request.user.slug}/')
+    if request.POST.get('text') or request.FILES.getlist('pictures'):
+        post = Post.objects.get(slug=request.POST.get('post_slug'))
+        if post.author == request.user:
+            post.text = request.POST.get('text')
+            post.edited_time = now()
+            post.save()
+            for picture in request.FILES.getlist('pictures'):
+                Picture(
+                    picture_itself=picture,
+                    uploader=request.user,
+                    post=post,
+                ).save()
+            return page
+        return HttpResponseForbidden()
+    error(request, 'post_is_empty!')
+    return page
