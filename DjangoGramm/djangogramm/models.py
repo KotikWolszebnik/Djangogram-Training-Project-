@@ -7,6 +7,10 @@ from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               SlugField, TextField)
 
 PICTURE_PATH = 'photos/%Y/%m/%d/'
+BIO_MAX_LENGHT = 150
+POST_MAX_LENGHT = 2200
+PICTURE_DESCRIPTION_MAX_LENGHT = 150
+COMMENT_MAX_LENGHT = 1000
 
 
 def save_with_random_slug(obj, slug_lenght: int, letters=True, *args, **kwargs):
@@ -30,25 +34,26 @@ class Account(AbstractUser):
     username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
-    about_yourself = TextField(max_length=150, blank=True)
-    confirmation_token = TextField(blank=True, null=True)
+    bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
+    avatar = OneToOneField(
+        'Picture', on_delete=SET_NULL, blank=True, null=True, related_name='avatar_of')
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
 
-    def save(self):
-        return save_with_random_slug(self, 10, letters=False)
+    def save(self, *args, **kwargs):
+        return save_with_random_slug(self, 10, letters=False, *args, **kwargs)
 
 
 class Post(Model):
     slug = SlugField(unique=True)
-    text = TextField(max_length=2200, blank=True)
-    posted_time = DateTimeField(auto_now_add=True, editable=False)
+    text = TextField(max_length=POST_MAX_LENGHT, blank=True, null=True)
+    created_at = DateTimeField(auto_now_add=True, editable=False)
     edited_time = DateTimeField(blank=True, null=True)
     author = ForeignKey(Account, on_delete=CASCADE, related_name='posts')
 
     class Meta:
-        ordering = ['-posted_time']
+        ordering = ['-created_at']
 
     def __str__(self):
         txt = 'No text in the Post'
@@ -56,49 +61,48 @@ class Post(Model):
             txt = self.text[:10]
         return f'< Post : {txt}... >'
 
-    def save(self):
-        return save_with_random_slug(self, 10)
+    def save(self, *args, **kwargs):
+        return save_with_random_slug(self, 10, *args, **kwargs)
 
 
 class Picture(Model):
     slug = SlugField(unique=True)
-    uploader = ForeignKey(
+    author = ForeignKey(
         Account, on_delete=SET_NULL, null=True, related_name='uploaded_pictures')
-    loading_time = DateTimeField(auto_now_add=True)
+    created_at = DateTimeField(auto_now_add=True)
     picture_itself = ImageField(upload_to=PICTURE_PATH)
-    description = TextField(max_length=150, blank=True)
+    description = TextField(
+        max_length=PICTURE_DESCRIPTION_MAX_LENGHT, blank=True, null=True)
     post = ForeignKey(
         Post, on_delete=SET_NULL, blank=True, null=True, related_name='pictures')
-    avatar_of = OneToOneField(
-        Account, on_delete=SET_NULL, blank=True, null=True, related_name='avatar')
 
     class Meta:
-        ordering = ['-loading_time']
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f'< Picture : {self.id} >'
+        return f'< Picture : {self.slug} >'
 
-    def save(self):
-        return save_with_random_slug(self, 10)
+    def save(self, *args, **kwargs):
+        return save_with_random_slug(self, 10, *args, **kwargs)
 
 
 class Comment(Model):
     slug = SlugField(unique=True)
-    text = TextField(max_length=1000)
-    posted_time = DateTimeField(auto_now_add=True)
+    text = TextField(max_length=COMMENT_MAX_LENGHT)
+    created_at = DateTimeField(auto_now_add=True)
     edited_time = DateTimeField(auto_now=True, blank=True, null=True)
     post = ForeignKey(Post, on_delete=CASCADE, related_name='comments')
     author = ForeignKey(Account, on_delete=CASCADE, related_name='comments')
 
     class Meta:
-        ordering = ['posted_time']
+        ordering = ['-created_at']
 
     def __str__(self):
         txt = self.text[:10]
         return f'< Comment : {self.author.get_full_name} | {txt}... >'
 
-    def save(self):
-        return save_with_random_slug(self, 10)
+    def save(self, *args, **kwargs):
+        return save_with_random_slug(self, 10, *args, **kwargs)
 
 
 class Like(Model):
@@ -107,13 +111,13 @@ class Like(Model):
     post = ForeignKey(Post, on_delete=CASCADE, blank=True, related_name='likes')
     comment = ForeignKey(Comment, on_delete=CASCADE, blank=True, related_name='likes')
     author = ForeignKey(Account, on_delete=CASCADE, related_name='likes')
-    time = DateTimeField(auto_now_add=True)
+    created_at = DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-time']
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f'< Like : {self.author.get_full_name()} | {self.time}>'
+        return f'< Like : {self.author.get_full_name()} | {self.created_at}>'
 
-    def save(self):
-        return save_with_random_slug(self, 10)
+    def save(self, *args, **kwargs):
+        return save_with_random_slug(self, 10, *args, **kwargs)
