@@ -10,12 +10,15 @@
     
     {% block postmaking %}
         {% if request.user == account %}
-            {% include 'inc/_postmaking.html' %}
+            {% if request.user.reg_confirmed_date %}
+                {% include 'inc/_postmaking.html' %}
+            {% endif %}
         {% endif %}
     {% endblock postmaking %}
 
     {% block posts %}
         {% if request.user == account %}
+        {% if request.user.reg_confirmed_date %}
             {% if post %}
                 {% include 'inc/_post.html' %}
             {% else %}
@@ -27,6 +30,7 @@
                     {% endif  %}
                 {% endfor %}
             {% endif  %}
+        {% endif  %}  
         {% elif not request.user.reg_confirmed_date %}
         {% else %}
             {% for post in account.posts.all %}

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/media/photos/2021-02-10_02_38_33.png" alt="" width="40"
+            <img src="/media/photos/logo.png" alt="" width="40"
                 height="40" class="d-inline-block align-top">
             DJANGOGRAMM
         </a>
@@ -19,12 +19,16 @@
                         height="40" class="d-inline-block align-top">
                 {% endif %}
                 </a>
-                <a href="/pictures/">My photos</a>
-                <a href="/comments/">My comments</a>
-                <a href="/likes/">My likes</a>
-                <a href="/accounts/">Other users</a>
+                {% if request.user.reg_confirmed_date %}
+                    <a href="/pictures/">My photos</a>
+                    <a href="/comments/">My comments</a>
+                    <a href="/likes/">My likes</a>
+                    <a href="/accounts/">Other users</a>
+                {% endif %}
             <div class="d-inline-flex p-2 justify-content-end">
-                    {% include 'inc/_edit_profile_button.html' %}
+                    {% if request.user.reg_confirmed_date %}
+                        {% include 'inc/_edit_profile_button.html' %}
+                    {% endif %}
                     {% include 'inc/_logout_button.html' %}
                 {% else %}
                     {% include 'inc/_login_button.html' %}

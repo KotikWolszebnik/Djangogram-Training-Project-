@@ -1,7 +1,9 @@
  <div class="col-md-4">
     <div class="card border-success mb-3">
         {% if request.user == account %}
-            {% include 'inc/_avatar_operations.html' %}
+            {% if request.user.reg_confirmed_date %}
+                {% include 'inc/_avatar_operations.html' %}
+            {% endif %}
         {% endif %}
 
         {% if not request.user.is_authenticated %}
@@ -28,11 +30,11 @@
             <h5 class="card-title">
                 {{ account.get_full_name }}
             </h5>
-            {% if bio_form %}
-                {% include 'inc/_profile_editing.html' %}
-            {% else %}
-                {% include 'inc/_profile_info.html' %}
-            {% endif %}
+                {% if bio_form %}
+                    {% include 'inc/_profile_editing.html' %}
+                {% else %}
+                    {% include 'inc/_profile_info.html' %}
+                {% endif %}
         </div>
     </div>
 </div>
