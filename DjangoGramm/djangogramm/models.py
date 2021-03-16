@@ -1,6 +1,5 @@
-from random import choices, randint
-from string import ascii_letters, digits
-
+from string import digits
+from nanoid import generate
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, ImageField, Model, OneToOneField,
@@ -17,9 +16,9 @@ def save_with_random_slug(obj, slug_lenght: int, letters=True, *args, **kwargs):
     if not obj.slug:
         is_unique = False
         while not is_unique:
-            slug = str(randint(0, int('9'*slug_lenght)))
+            slug = generate(alphabet=digits, size=slug_lenght)
             if letters:
-                slug = ''.join(choices(digits + ascii_letters, k=slug_lenght))
+                slug = generate(size=slug_lenght)
             is_unique = (obj.__class__.objects.filter(slug=slug).count() == 0)
         obj.slug = slug
     super(obj.__class__, obj).save(*args, **kwargs)
