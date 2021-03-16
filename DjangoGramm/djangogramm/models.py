@@ -20,7 +20,7 @@ def make_unique_random_slug(obj, slug_lenght: int, letters=True):
             slug = generate(alphabet=digits, size=slug_lenght)
             if letters:
                 slug = generate(size=slug_lenght)
-            is_unique = obj.__class__.objects.filter(slug=slug).exists()
+            is_unique = not obj.__class__.objects.filter(slug=slug).exists()
         obj.slug = slug
 
 # Create your models here.
