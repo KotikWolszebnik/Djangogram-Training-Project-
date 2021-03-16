@@ -1,9 +1,10 @@
 from string import digits
-from nanoid import generate
+
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, ImageField, Model, OneToOneField,
                               SlugField, TextField)
+from nanoid import generate
 
 PICTURE_PATH = 'photos/%Y/%m/%d/'
 BIO_MAX_LENGHT = 150
@@ -12,7 +13,7 @@ PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
 
 
-def save_with_random_slug(obj, slug_lenght: int, letters=True, *args, **kwargs):
+def make_unique_random_slug(obj, slug_lenght: int, letters=True):
     if not obj.slug:
         is_unique = False
         while not is_unique:
@@ -21,7 +22,6 @@ def save_with_random_slug(obj, slug_lenght: int, letters=True, *args, **kwargs):
                 slug = generate(size=slug_lenght)
             is_unique = obj.__class__.objects.filter(slug=slug).exists()
         obj.slug = slug
-    super(obj.__class__, obj).save(*args, **kwargs)
 
 # Create your models here.
 
@@ -41,7 +41,8 @@ class Account(AbstractUser):
         return f'< Account : {self.get_full_name()} >'
 
     def save(self, *args, **kwargs):
-        return save_with_random_slug(self, 10, letters=False, *args, **kwargs)
+        make_unique_random_slug(self, 10, letters=False)
+        return super(self.__class__, self).save(*args, **kwargs)
 
 
 class Post(Model):
@@ -61,7 +62,8 @@ class Post(Model):
         return f'< Post : {txt}... >'
 
     def save(self, *args, **kwargs):
-        return save_with_random_slug(self, 10, *args, **kwargs)
+        make_unique_random_slug(self, 10)
+        return super(self.__class__, self).save(*args, **kwargs)
 
 
 class Picture(Model):
@@ -82,7 +84,8 @@ class Picture(Model):
         return f'< Picture : {self.slug} >'
 
     def save(self, *args, **kwargs):
-        return save_with_random_slug(self, 10, *args, **kwargs)
+        make_unique_random_slug(self, 10)
+        return super(self.__class__, self).save(*args, **kwargs)
 
 
 class Comment(Model):
@@ -101,7 +104,8 @@ class Comment(Model):
         return f'< Comment : {self.author.get_full_name} | {txt}... >'
 
     def save(self, *args, **kwargs):
-        return save_with_random_slug(self, 10, *args, **kwargs)
+        make_unique_random_slug(self, 10)
+        return super(self.__class__, self).save(*args, **kwargs)
 
 
 class Like(Model):
@@ -119,4 +123,5 @@ class Like(Model):
         return f'< Like : {self.author.get_full_name()} | {self.created_at}>'
 
     def save(self, *args, **kwargs):
-        return save_with_random_slug(self, 10, *args, **kwargs)
+        make_unique_random_slug(self, 10)
+        return super(self.__class__, self).save(*args, **kwargs)
