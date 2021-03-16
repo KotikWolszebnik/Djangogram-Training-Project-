@@ -1,7 +1,5 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.tokens import \
-    default_token_generator as token_generator
 from django.contrib.messages import error, success
 from django.core.mail import send_mail
 from django.http import (HttpResponseForbidden, HttpResponseNotAllowed,
@@ -9,9 +7,32 @@ from django.http import (HttpResponseForbidden, HttpResponseNotAllowed,
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.timezone import now
+from nanoid import generate
 
-from .forms import LoginForm, RegistrationForm, BioChangeForm, PostForm
+from .forms import BioChangeForm, LoginForm, PostForm, RegistrationForm
 from .models import Account, Picture, Post
+
+tokens_storage = list()
+
+
+class TokenGenerator(object):
+    def __init__(self, account):
+        self.token = generate(size=40)
+        self.account = account
+
+    @classmethod
+    def check_token(cls, account, token):
+        for token_obj in tokens_storage:
+            if token_obj.token == token and token_obj.account == account:
+                tokens_storage.remove(token_obj)
+                return True
+        return False
+
+    @classmethod
+    def make_token(cls, account):
+        obj = TokenGenerator(account)
+        tokens_storage.append(obj)
+        return obj
 
 
 def POST_method_required(func):
@@ -19,6 +40,14 @@ def POST_method_required(func):
         if request.method == 'POST':
             return func(request)
         return HttpResponseNotAllowed(['POST'])
+    return wrapper
+
+
+def confirm_required(func):
+    def wrapper(request):
+        if request.user.reg_confirmed_date:
+            return func(request)
+        return HttpResponseForbidden()
     return wrapper
 # Create your views here.
 
@@ -36,6 +65,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid:
             account = form.save()
+            token_object = TokenGenerator.make_token(account)
             send_mail(
                 subject='Confirm registration',
                 message='',
@@ -46,7 +76,7 @@ def register(request):
                     context=dict(
                         host=request.get_host(),
                         account=account,
-                        unique_string=token_generator.make_token(account),
+                        unique_string=token_object.token,
                         ),
                     ),
                 )
@@ -85,6 +115,7 @@ def show_wall(request, account_slug: int):
     return HttpResponseNotFound
 
 
+@confirm_required
 @login_required
 def get_post_by_slug(request, post_slug: str):
     if Post.objects.filter(slug=post_slug).exists():
@@ -103,7 +134,7 @@ def get_post_by_slug(request, post_slug: str):
 @login_required
 def confirm_registration(request, unique_string: str):
     page = redirect(f'/wall/{request.user.slug}/')
-    if token_generator.check_token(request.user, unique_string):
+    if TokenGenerator.check_token(request.user, unique_string):
         request.user.reg_confirmed_date = now()
         request.user.save()
         success(request, 'confirm_success')
@@ -112,6 +143,7 @@ def confirm_registration(request, unique_string: str):
     return page
 
 
+@confirm_required
 @POST_method_required
 @login_required
 def add_post(request):
@@ -124,8 +156,9 @@ def add_post(request):
     return page
 
 
-@POST_method_required
+@confirm_required
 @login_required
+@POST_method_required
 def delete_post(request):
     if Post.objects.filter(slug=request.POST.get('slug')).exists():
         post = Post.objects.get(slug=request.POST.get('slug'))
@@ -136,15 +169,16 @@ def delete_post(request):
     return HttpResponseNotFound()
 
 
-@POST_method_required
 @login_required
+@POST_method_required
 def logout_account(request):
     logout(request)
     return redirect('login')
 
 
-@POST_method_required
+@confirm_required
 @login_required
+@POST_method_required
 def edit_bio(request):
     page = redirect(f'/wall/{request.user.slug}/')
     form = BioChangeForm(request.POST, instance=request.user)
@@ -155,8 +189,9 @@ def edit_bio(request):
     return page
 
 
-@POST_method_required
+@confirm_required
 @login_required
+@POST_method_required
 def setup_avatar(request):
     picture = Picture(
         picture_itself=request.FILES.get('avatar'),
@@ -168,8 +203,9 @@ def setup_avatar(request):
     return redirect(f'/wall/{request.user.slug}/')
 
 
-@POST_method_required
+@confirm_required
 @login_required
+@POST_method_required
 def delete_avatar(request):
     if request.user.avatar:
         request.user.avatar.avatar_of = None
@@ -178,8 +214,9 @@ def delete_avatar(request):
     return HttpResponseNotFound()
 
 
-@POST_method_required
+@confirm_required
 @login_required
+@POST_method_required
 def edit_post(request):
     page = redirect(f'/wall/{request.user.slug}/')
     if request.POST.get('text') or request.FILES.getlist('pictures'):
