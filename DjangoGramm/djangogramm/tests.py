@@ -10,22 +10,23 @@ from .models import Account, Picture, Post
 class YourTestClass(TestCase):
 
     def setUp(self):
+        self.avatar = Picture(
+            picture_itself=SimpleUploadedFile('image.jpeg', b'', 'image/gpeg'),
+        ).save()
         self.account = Account.objects.create(
-            id=967103409,
+            slug=967103409,
             email='test@user.com',
             password='password',
             first_name='Максим',
             last_name='Шаврин',
-            about_yourself=words(16)
+            bio=words(16),
+            avatar=self.avatar,
         )
-        self.avatar = Picture(
-            picture_itself=SimpleUploadedFile('image.jpeg', b'', 'image/gpeg'),
-            avatar_of=self.account,
-        ).save()
         for item in range(7):
             Post(text=words(16), author=self.account).save()
 
     def register_user(self):
+        """Make the fixture."""
         resp = self.client.post(
             '/registration/',
             data=dict(
@@ -38,31 +39,33 @@ class YourTestClass(TestCase):
             follow=True,
         )
         self.unique_token = str(mail.outbox[0].message())\
-            .split('<a href="https://djgramm.herokuapp.com/confirm/')[1]\
-            .split('/', maxsplit=1)[0]
+            .split('/confirm/')[1].split('/', maxsplit=1)[0]
         return resp
 
     def register_and_confirm(self):
+        """Make the fixture."""
         self.register_user()
         return self.client.get(f'/confirm/{self.unique_token}/')
 
     def register_confirm_and_post(self):
+        """Make the fixture."""
         resp = self.register_and_confirm()
-        self.post_text = 'Post № 1: Creating test database for alias default...'
+        self.post_text = 'Присваивание в условии цикла - Python - Киберфорум'
         Post.objects.create(
-            id=1234567890,
+            slug=1234567890,
             text=self.post_text,
             author=resp.wsgi_request.user)
-        return self.client.get(f'/wall/{resp.wsgi_request.user.pk}/')
+        return self.client.get(f'/wall/{resp.wsgi_request.user.slug}/')
 
     def test_index_login_page(self):
-        index_resp = str(self.client.get('/').content)
+        index_resp = str(self.client.get('/').content, encoding='utf-8')
         self.assertIn('<h5 class="card-title">Log in</h5>', index_resp)
 
     def test_registration_page(self):
+        resp = self.client.get('/registration/')
+        resp_str = str(resp.content, encoding='utf-8')
         self.assertIn(
-            '<form action="/registration/" method="POST">',
-            str(self.client.get('/registration/').content),
+            '<form action="/registration/" method="POST">', resp_str,
             )
 
     def test_wall_of_user_if_you_without_auth(self):
@@ -75,7 +78,8 @@ class YourTestClass(TestCase):
         self.assertNotIn('Lorem', resp_str)
 
     def test_register(self):
-        resp = self.register_user()
+        resp = self.register_user()  # fixture
+
         self.assertTrue(resp.wsgi_request.user.is_authenticated)
         resp_str = str(resp.content, encoding='utf-8')
         self.assertIn('Test User', resp_str)
@@ -83,7 +87,8 @@ class YourTestClass(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
     def test_login(self):
-        self.register_user()
+        self.register_user()  # fixture
+
         resp = self.client.post(
             '/login/',
             data=dict(
@@ -97,7 +102,8 @@ class YourTestClass(TestCase):
         self.assertIn('Test User', resp_str)
 
     def test_wall_of_user_if_you_without_confirm(self):
-        self.register_user()
+        self.register_user()  # fixture
+
         resp = self.client.get('/wall/967103409/')
         resp_str = str(resp.content, encoding='utf-8')
         self.assertTrue(resp.wsgi_request.user.is_authenticated)
@@ -111,8 +117,10 @@ class YourTestClass(TestCase):
         self.assertNotIn('Lorem', resp_str)
 
     def test_confirm(self):
-        resp = self.register_user()
+        resp = self.register_user()  # fixture
+
         self.assertIsNone(resp.wsgi_request.user.reg_confirmed_date)
+
         self.client.get(f'/confirm/{self.unique_token}/')
         resp = self.client.get('/wall/967103409/')
         resp_str = str(resp.content, encoding='utf-8')
@@ -122,25 +130,26 @@ class YourTestClass(TestCase):
             'You can\'t see another user info, posts and pictures before conf',
             resp_str,
         )
-        self.assertNotIn('unknown-user.jpg', resp_str)
         self.assertIn('lorem ipsum dolor', resp_str)
 
     def test_about_yourself(self):
-        self.register_and_confirm()
-        about_yourself = 'Creating test database for alias default...'
+        self.register_and_confirm()  # fixture
+
+        bio = 'Creating test database for alias default...'
         resp = self.client.post(
-            '/profile/',
-            data=dict(about_yourself=about_yourself),
+            '/bio/edit/',
+            data=dict(bio=bio),
             follow=True,
         )
         resp_str = str(resp.content, encoding='utf-8')
-        self.assertIn(about_yourself, resp_str)
+        self.assertIn(bio, resp_str)
 
     def test_post(self):
-        self.register_and_confirm()
+        self.register_and_confirm()  # fixture
+
         post_text = 'Post № 1: Creating test database for alias default...'
         resp = self.client.post(
-            '/post/',
+            '/post/create/',
             data=dict(text=post_text),
             follow=True,
         )
@@ -148,33 +157,40 @@ class YourTestClass(TestCase):
         self.assertIn(post_text, resp_str)
 
     def test_wall_post_and_about_editing_regims(self):
-        resp = self.register_confirm_and_post()
+        resp = self.register_confirm_and_post()  # fixture
+
         resp_str = str(resp.content, encoding='utf-8')
-        about_text = '<textarea required name="about_yourself" cols="35" rows="10" placeholder="About yourself:"></textarea>\n'
+        about_text = '<textarea name="bio" cols="40" rows="10" maxlength="150" id="id_bio">\n</textarea></p>'
         self.assertNotIn(about_text, resp_str)
+
         resp = self.client.post(
-            f'/wall/{resp.wsgi_request.user.pk}/',
+            f'/wall/{resp.wsgi_request.user.slug}/',
             data=dict(edit_profile=True),
+            follow=True,
         )
         resp_str = str(resp.content, encoding='utf-8')
         self.assertIn(about_text, resp_str)
+
         resp = self.client.post(
-            f'/wall/{resp.wsgi_request.user.pk}/',
-            data=dict(edit_post_id=1234567890),
+            f'/wall/{resp.wsgi_request.user.slug}/',
+            data=dict(edit_post_slug=1234567890),
+            follow=True,
         )
         resp_str = str(resp.content, encoding='utf-8')
-        edit_post_text = '<textarea name="text" cols="81" rows="5" placeholder="text">'
+        edit_post_text = '<textarea name="text" cols="40" rows="10" maxlength="2200" id="id_text">\n</textarea>'
         self.assertIn(edit_post_text, resp_str)
 
     def test_edit_post(self):
-        resp = self.register_confirm_and_post()
+        resp = self.register_confirm_and_post()  # fixture
+
         resp_str = str(resp.content, encoding='utf-8')
         self.assertIn(self.post_text, resp_str)
         changed_post_text = 'ChangedPost № 1: Creating test database for alias default...'
+        
         resp = self.client.post(
             '/post/edit/',
             data=dict(
-                post_id=1234567890,
+                post_slug=1234567890,
                 text=changed_post_text,
             ),
             follow=True,
@@ -184,26 +200,20 @@ class YourTestClass(TestCase):
         self.assertIn('edited', resp_str)
 
     def test_delete_post(self):
-        resp = self.register_confirm_and_post()
+        resp = self.register_confirm_and_post()  # fixture
+
         resp_str = str(resp.content, encoding='utf-8')
         self.assertIn(self.post_text, resp_str)
         resp = self.client.post(
             '/post/delete/',
-            data=dict(id=1234567890),
+            data=dict(slug=1234567890),
             follow=True,
         )
         resp_str = str(resp.content, encoding='utf-8')
         self.assertNotIn(self.post_text, resp_str)
 
-    def test_delete_avatar(self):
-        resp = self.register_and_confirm()
-        resp_str = str(resp.content, encoding='utf-8')
-        self.assertNotIn('unknown-user.jpg', resp_str)
-        resp = self.client.post('/avatar/delete/', follow=True)
-        resp_str = str(resp.content, encoding='utf-8')
-        self.assertIn('unknown-user.jpg', resp_str)
-
     def test_logout(self):
-        self.register_and_confirm()
+        self.register_and_confirm()  # fixture
+
         resp = self.client.post('/logout/', follow=True)
         self.assertFalse(resp.wsgi_request.user.is_authenticated)
