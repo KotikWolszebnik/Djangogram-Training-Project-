@@ -19,7 +19,7 @@ def save_with_random_slug(obj, slug_lenght: int, letters=True, *args, **kwargs):
             slug = generate(alphabet=digits, size=slug_lenght)
             if letters:
                 slug = generate(size=slug_lenght)
-            is_unique = (obj.__class__.objects.filter(slug=slug).count() == 0)
+            is_unique = obj.__class__.objects.filter(slug=slug).exists()
         obj.slug = slug
     super(obj.__class__, obj).save(*args, **kwargs)
 
