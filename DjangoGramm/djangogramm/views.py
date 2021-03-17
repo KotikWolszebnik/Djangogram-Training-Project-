@@ -21,7 +21,7 @@ class TokenGenerator(object):
         self.account = account
 
     @classmethod
-    def check_token(cls, account, token):
+    def check_token(cls, account, token: str):
         for token_obj in tokens_storage:
             if token_obj.token == token and token_obj.account == account:
                 tokens_storage.remove(token_obj)
@@ -29,10 +29,10 @@ class TokenGenerator(object):
         return False
 
     @classmethod
-    def make_token(cls, account):
+    def make_token(cls, account) -> str:
         obj = TokenGenerator(account)
         tokens_storage.append(obj)
-        return obj
+        return obj.token
 
 
 def POST_method_required(func):
@@ -65,7 +65,6 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid:
             account = form.save()
-            token_object = TokenGenerator.make_token(account)
             send_mail(
                 subject='Confirm registration',
                 message='',
@@ -76,7 +75,7 @@ def register(request):
                     context=dict(
                         host=request.get_host(),
                         account=account,
-                        unique_string=token_object.token,
+                        unique_string=TokenGenerator.make_token(account),
                         ),
                     ),
                 )
