@@ -47,7 +47,9 @@ def confirm_required(func):
     def wrapper(request):
         if request.user.reg_confirmed_date:
             return func(request)
-        return HttpResponseForbidden()
+        return HttpResponseForbidden(
+            content=b'You must confirm registration for doing this',
+            )
     return wrapper
 # Create your views here.
 
