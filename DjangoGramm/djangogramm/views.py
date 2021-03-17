@@ -13,6 +13,7 @@ from .forms import BioChangeForm, LoginForm, PostForm, RegistrationForm
 from .models import Account, Picture, Post
 
 
+# Create your classes here.
 class TokenGenerator(object):
     tokens_storage = list()
 
@@ -21,7 +22,7 @@ class TokenGenerator(object):
         self.account = account
 
     @classmethod
-    def check_token(cls, account, token: str):
+    def check_token(cls, account, token: str) -> bool:
         for token_obj in cls.tokens_storage:
             if token_obj.token == token and token_obj.account == account:
                 cls.tokens_storage.remove(token_obj)
@@ -34,8 +35,11 @@ class TokenGenerator(object):
         cls.tokens_storage.append(obj)
         return obj.token
 
+# Create your decorators here.
+
 
 def POST_method_required(func):
+    """Decoraror"""
     def wrapper(request):
         if request.method == 'POST':
             return func(request)
@@ -44,6 +48,7 @@ def POST_method_required(func):
 
 
 def confirm_required(func):
+    """Decoraror"""
     def wrapper(request):
         if request.user.reg_confirmed_date:
             return func(request)
@@ -51,6 +56,7 @@ def confirm_required(func):
             content=b'You must confirm registration for doing this',
             )
     return wrapper
+
 # Create your views here.
 
 
@@ -113,7 +119,7 @@ def show_wall(request, account_slug: int):
                 elif request.POST.get('edit_post_slug'):
                     data['edit_post_slug'] = request.POST.get('edit_post_slug')
         return render(request, 'wall.html', data)
-    return HttpResponseNotFound
+    return HttpResponseNotFound(content=b'Account with this slug not found')
 
 
 @confirm_required
@@ -129,7 +135,7 @@ def get_post_by_slug(request, post_slug: str):
             )
         error(request, 'not_confirmed!')
         return render(request, 'wall.html', dict(account=post.author))
-    return HttpResponseNotFound()
+    return HttpResponseNotFound(content=b'Post with this slug not found')
 
 
 @login_required
@@ -145,8 +151,8 @@ def confirm_registration(request, unique_string: str):
 
 
 @confirm_required
-@POST_method_required
 @login_required
+@POST_method_required
 def add_post(request):
     page = redirect(f'/wall/{request.user.slug}/')
     form = PostForm(data=request.POST, files=request.FILES)
@@ -166,8 +172,10 @@ def delete_post(request):
         if post.author == request.user:
             post.delete()
             return redirect(f'/wall/{request.user.slug}/')
-        return HttpResponseForbidden()
-    return HttpResponseNotFound()
+        return HttpResponseForbidden(
+            content=b'You can not delete another users posts',
+            )
+    return HttpResponseNotFound(content=b'Post with this slug not found')
 
 
 @login_required
@@ -212,7 +220,7 @@ def delete_avatar(request):
         request.user.avatar.avatar_of = None
         request.user.save()
         return redirect(f'/wall/{request.user.slug}/')
-    return HttpResponseNotFound()
+    return HttpResponseNotFound(content=b'Avatar absent to delete')
 
 
 @confirm_required
@@ -233,6 +241,8 @@ def edit_post(request):
                     post=post,
                 ).save()
             return page
-        return HttpResponseForbidden()
+        return HttpResponseForbidden(
+            content=b'You can not edit another users posts',
+            )
     error(request, 'post_is_empty!')
     return page
