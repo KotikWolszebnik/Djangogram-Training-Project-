@@ -12,26 +12,26 @@ from nanoid import generate
 from .forms import BioChangeForm, LoginForm, PostForm, RegistrationForm
 from .models import Account, Picture, Post
 
-tokens_storage = list()
-
 
 class TokenGenerator(object):
+    tokens_storage = list()
+
     def __init__(self, account):
         self.token = generate(size=40)
         self.account = account
 
     @classmethod
     def check_token(cls, account, token: str):
-        for token_obj in tokens_storage:
+        for token_obj in cls.tokens_storage:
             if token_obj.token == token and token_obj.account == account:
-                tokens_storage.remove(token_obj)
+                cls.tokens_storage.remove(token_obj)
                 return True
         return False
 
     @classmethod
     def make_token(cls, account) -> str:
         obj = TokenGenerator(account)
-        tokens_storage.append(obj)
+        cls.tokens_storage.append(obj)
         return obj.token
 
 
