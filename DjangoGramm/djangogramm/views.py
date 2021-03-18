@@ -38,7 +38,7 @@ class TokenGenerator(object):
 # Create your decorators here.
 
 
-def POST_method_required(func):
+def post_method_required(func):
     """Decoraror"""
     def wrapper(request):
         if request.method == 'POST':
@@ -152,7 +152,7 @@ def confirm_registration(request, unique_string: str):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def add_post(request):
     page = redirect(f'/wall/{request.user.slug}/')
     form = PostForm(data=request.POST, files=request.FILES)
@@ -165,7 +165,7 @@ def add_post(request):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def delete_post(request):
     if Post.objects.filter(slug=request.POST.get('slug')).exists():
         post = Post.objects.get(slug=request.POST.get('slug'))
@@ -179,7 +179,7 @@ def delete_post(request):
 
 
 @login_required
-@POST_method_required
+@post_method_required
 def logout_account(request):
     logout(request)
     return redirect('login')
@@ -187,7 +187,7 @@ def logout_account(request):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def edit_bio(request):
     page = redirect(f'/wall/{request.user.slug}/')
     form = BioChangeForm(request.POST, instance=request.user)
@@ -200,7 +200,7 @@ def edit_bio(request):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def setup_avatar(request):
     picture = Picture(
         picture_itself=request.FILES.get('avatar'),
@@ -214,7 +214,7 @@ def setup_avatar(request):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def delete_avatar(request):
     if request.user.avatar:
         request.user.avatar.avatar_of = None
@@ -225,7 +225,7 @@ def delete_avatar(request):
 
 @confirm_required
 @login_required
-@POST_method_required
+@post_method_required
 def edit_post(request):
     page = redirect(f'/wall/{request.user.slug}/')
     if request.POST.get('text') or request.FILES.getlist('pictures'):
