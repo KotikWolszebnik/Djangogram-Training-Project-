@@ -1,0 +1,22 @@
+{% if account != request.user %}
+    {% if subscribed %}
+        <small class="text-muted">
+            You are subscribed to {{ account.get_full_name }}
+        </small>
+        <form action="/unsubscribe/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="addressee" value="{{ account.slug }}">
+            <button type="submit" class="btn btn-success">
+                Unsubscribe <i class="bi bi-person-dash"></i>
+            </button>
+        </form>
+    {% else %}
+        <form action="/subscribe/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="addressee" value="{{ account.slug }}">
+            <button type="submit" class="btn btn-success">
+                Subscribe <i class="bi bi-person-plus"></i>
+            </button>
+        </form>
+    {% endif %}
+{% endif %}

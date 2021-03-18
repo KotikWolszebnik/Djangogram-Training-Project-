@@ -18,7 +18,7 @@ from django.urls import path
 from .views import (add_post, auth_need, confirm_registration, delete_avatar,
                     delete_post, edit_bio, edit_post, get_post_by_slug,
                     login_account, logout_account, register, setup_avatar,
-                    show_wall)
+                    show_wall, subscribe, unsubscribe)
 
 urlpatterns = [
     path('', login_account),
@@ -35,4 +35,6 @@ urlpatterns = [
     path('avatar/create/', setup_avatar, name='create_avatar'),  # Not tested
     path('avatar/delete/', delete_avatar, name='delete_avatar'),
     path('auth_need/', auth_need, name='auth_need'),
+    path('subscribe/', subscribe, name='subscribe'),
+    path('unsubscribe/', unsubscribe, name='unsubscribe'),
 ]

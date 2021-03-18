@@ -130,7 +130,7 @@ class Like(Model):
 class Following(Model):
     slug = SlugField(unique=True)
     author = ForeignKey(Account, on_delete=CASCADE, related_name='subscribes')
-    addressee = ForeignKey(Account, on_delete=CASCADE, related_name='followers')
+    addressee = ForeignKey(Account, on_delete=CASCADE, related_name='follows')
     created_at = DateTimeField(auto_now_add=True)
 
     class Meta:

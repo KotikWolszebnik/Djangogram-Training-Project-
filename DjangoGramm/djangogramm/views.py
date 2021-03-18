@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from nanoid import generate
 
 from .forms import BioChangeForm, LoginForm, PostForm, RegistrationForm
-from .models import Account, Picture, Post
+from .models import Account, Picture, Post, Following
 
 
 # Create your classes here.
@@ -103,7 +103,10 @@ def login_account(request):
             account = form.get_user()
             login(request, account)
             return redirect(f'/wall/{account.slug}/')
-        error(request, 'The account with this email and / or password doesn´t exist!!')
+        error(
+            request,
+            'The account with this email and / or password doesn´t exist!!',
+            )
         return page
     return page
 
@@ -113,6 +116,10 @@ def show_wall(request, account_slug: int):
         account = Account.objects.get(slug=account_slug)
         data = dict(account=account, post_form=PostForm())
         if request.user.is_authenticated:
+            if Following.objects\
+                .filter(author=request.user, addressee=account)\
+                    .exists():
+                data['subscribed'] = True
             if request.method == 'POST':
                 if request.POST.get('edit_profile'):
                     data['bio_form'] = BioChangeForm(instance=request.user)
@@ -133,7 +140,10 @@ def get_post_by_slug(request, post_slug: str):
                     account=post.author, post=post, by_link=True,
                 ),
             )
-        error(request, 'Confirm your registration to see posts from other users!')
+        error(
+            request,
+            'Confirm your registration to see posts from other users!',
+            )
         return render(request, 'wall.html', dict(account=post.author))
     return HttpResponseNotFound(content=b'Post with this slug not found')
 
@@ -246,3 +256,42 @@ def edit_post(request):
             )
     error(request, 'The post must contain something!')
     return page
+
+
+@confirm_required
+@login_required
+@post_method_required
+def subscribe(request):
+    if Account.objects.filter(slug=request.POST.get('addressee')).exists():
+        account = Account.objects.get(slug=request.POST.get('addressee'))
+        if account != request.user:
+            if not Following.objects\
+                .filter(author=request.user, addressee=account)\
+                    .exists():
+                Following(author=request.user, addressee=account).save()
+                return redirect(f'/wall/{account.slug}/')
+            return HttpResponseForbidden(content=b'You are allready subscribed')   
+        return HttpResponseForbidden(content=b'You can not subscribe to yourself')
+    return HttpResponseNotFound(content=b'Account with this slug not found')
+
+
+@confirm_required
+@login_required
+@post_method_required
+def unsubscribe(request):
+    if Account.objects.filter(slug=request.POST.get('addressee')).exists():
+        account = Account.objects.get(slug=request.POST.get('addressee'))
+        if account != request.user:
+            if Following.objects\
+                .filter(author=request.user, addressee=account)\
+                    .exists():
+                Following.objects.get(author=request.user, addressee=account)\
+                    .delete()
+                return redirect(f'/wall/{account.slug}/')
+            return HttpResponseForbidden(
+                content=b'You are not subscribed for unsubscribing',
+            )
+        return HttpResponseForbidden(
+            content=b'You can not unsubscribe from yourself'
+        )
+    return HttpResponseNotFound(content=b'Account with this slug not found')

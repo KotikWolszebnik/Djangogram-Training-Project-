@@ -35,6 +35,9 @@
                 {% else %}
                     {% include 'inc/_profile_info.html' %}
                 {% endif %}
+            {% if account.reg_confirmed_date %}
+                {% include 'inc/_follow_unfollow_buttons.html' %}
+            {% endif %}
         </div>
     </div>
 </div>
