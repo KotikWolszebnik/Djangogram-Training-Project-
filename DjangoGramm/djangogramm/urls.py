@@ -17,8 +17,9 @@ from django.urls import path
 
 from .views import (add_post, auth_need, confirm_registration, delete_avatar,
                     delete_post, edit_bio, edit_post, get_post_by_slug,
-                    login_account, logout_account, register, setup_avatar,
-                    show_wall, subscribe, unsubscribe)
+                    like_post, login_account, logout_account, register,
+                    setup_avatar, show_wall, subscribe, unlike_post,
+                    unsubscribe)
 
 urlpatterns = [
     path('', login_account),
@@ -37,4 +38,6 @@ urlpatterns = [
     path('auth_need/', auth_need, name='auth_need'),
     path('subscribe/', subscribe, name='subscribe'),
     path('unsubscribe/', unsubscribe, name='unsubscribe'),
+    path('post/like/', like_post, name='like_post'),
+    path('post/unlike/', unlike_post, name='unlike_post'),
 ]

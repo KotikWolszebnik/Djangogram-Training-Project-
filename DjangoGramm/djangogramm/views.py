@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from nanoid import generate
 
 from .forms import BioChangeForm, LoginForm, PostForm, RegistrationForm
-from .models import Account, Picture, Post, Following
+from .models import Account, Picture, Post, Following, Like
 
 
 # Create your classes here.
@@ -49,9 +49,9 @@ def post_method_required(func):
 
 def confirm_required(func):
     """Decoraror"""
-    def wrapper(request):
+    def wrapper(request, *args, **kwargs):
         if request.user.reg_confirmed_date:
-            return func(request)
+            return func(request, *args, **kwargs)
         return HttpResponseForbidden(
             content=b'You must confirm registration for doing this',
             )
@@ -114,8 +114,15 @@ def login_account(request):
 def show_wall(request, account_slug: int):
     if Account.objects.filter(slug=account_slug).exists():
         account = Account.objects.get(slug=account_slug)
-        data = dict(account=account, post_form=PostForm())
+        data = dict(account=account)
+        liked_posts = list()
         if request.user.is_authenticated:
+            for post in account.posts.all():
+                if request.user in [like.author for like in post.likes.all()]:
+                    liked_posts.append(post)
+            data['liked_posts'] = liked_posts
+            if request.user == account:
+                data['post_form'] = PostForm()
             if Following.objects\
                 .filter(author=request.user, addressee=account)\
                     .exists():
@@ -134,12 +141,11 @@ def show_wall(request, account_slug: int):
 def get_post_by_slug(request, post_slug: str):
     if Post.objects.filter(slug=post_slug).exists():
         post = Post.objects.get(slug=post_slug)
-        if post.author == request.user or request.user.reg_confirmed_date():
-            return render(
-                request, 'wall.html', dict(
-                    account=post.author, post=post, by_link=True,
-                ),
-            )
+        if request.user.reg_confirmed_date:
+            data = dict(account=post.author, post=post, by_link=True)
+            if request.user == post.author:
+                data['post_form'] = PostForm()
+            return render(request, 'wall.html', data)
         error(
             request,
             'Confirm your registration to see posts from other users!',
@@ -295,3 +301,35 @@ def unsubscribe(request):
             content=b'You can not unsubscribe from yourself'
         )
     return HttpResponseNotFound(content=b'Account with this slug not found')
+
+
+@confirm_required
+@login_required
+@post_method_required
+def like_post(request):
+    if Post.objects.filter(slug=request.POST.get('slug')).exists():
+        post = Post.objects.get(slug=request.POST.get('slug'))
+        if not Like.objects.filter(author=request.user, post=post).exists():
+            Like(author=request.user, post=post).save()
+            return redirect(f'/wall/{post.author.slug}/')
+        return HttpResponseForbidden(
+                content=b'The post is allready liked by you',
+            )
+    return HttpResponseNotFound(content=b'Post with this slug not found')
+    
+
+
+
+@confirm_required
+@login_required
+@post_method_required
+def unlike_post(request):
+    if Post.objects.filter(slug=request.POST.get('slug')).exists():
+        post = Post.objects.get(slug=request.POST.get('slug'))
+        if Like.objects.filter(author=request.user, post=post).exists():
+            Like.objects.get(author=request.user, post=post).delete()
+            return redirect(f'/wall/{post.author.slug}/')
+        return HttpResponseForbidden(
+            content=b'The Post is not liked by you to unlike',
+            )
+    return HttpResponseNotFound(content=b'Post with this slug not found')

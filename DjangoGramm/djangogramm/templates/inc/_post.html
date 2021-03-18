@@ -35,17 +35,15 @@
         <div class="card-footer">
             <div class="row">
                 <div class="col justify-content-start">
-                    <form action="/post/like/" method="POST">
+                    <form action="/post/{% if post in liked_posts %}unlike{% else %}like{% endif %}/"method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="id" value={{ post.pk }}>
+                        <input type="hidden" name="slug" value="{{ post.slug }}">
                         <button type="submit" class="btn btn-default">
-                            {% for like in post.likes.all %}
-                                {% if like.author == request.user %}
-                                    <i class="bi bi-suit-heart-fill" style="color: forestgreen;"></i>
-                                {% endif %}
-                            {% empty %}
-                                <i class="bi bi-suit-heart"></i>
-                            {% endfor %}
+                            {% if post in liked_posts %}
+                                <i class="bi bi-suit-heart-fill" style="font-size: 1.5rem; color: forestgreen;"></i>
+                            {% else %}
+                                <i class="bi bi-suit-heart" style="font-size: 1.5rem;"></i>
+                            {% endif %}
                         </button>
                         <i class="bi bi-chat-dots"></i>
                     </form>

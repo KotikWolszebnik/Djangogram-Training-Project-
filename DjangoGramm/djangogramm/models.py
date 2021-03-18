@@ -110,9 +110,9 @@ class Comment(Model):
 
 class Like(Model):
     slug = SlugField(unique=True)
-    picture = ForeignKey(Picture, on_delete=CASCADE, blank=True, related_name='likes')
-    post = ForeignKey(Post, on_delete=CASCADE, blank=True, related_name='likes')
-    comment = ForeignKey(Comment, on_delete=CASCADE, blank=True, related_name='likes')
+    picture = ForeignKey(Picture, on_delete=CASCADE, blank=True, null=True, related_name='likes')
+    post = ForeignKey(Post, on_delete=CASCADE, blank=True, null=True, related_name='likes')
+    comment = ForeignKey(Comment, on_delete=CASCADE, blank=True, null=True, related_name='likes')
     author = ForeignKey(Account, on_delete=CASCADE, related_name='likes')
     created_at = DateTimeField(auto_now_add=True)
 
