@@ -1,29 +1,12 @@
 {% for message in messages %}
     {% if message.tags == 'error' %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <b>
-                ERROR: 
-                {% if message.message == 'validation_error!' %}
-                    Validation failed!
-                {% elif message.message == 'account_not_exist!' %}
-                    The account with this email and / or password doesn´t exist!
-                {% elif message.message == 'post_is_empty!' %}
-                    The post must contain something!
-                {% elif message.message == 'not_confirmed!' %}
-                    Confirm your registration to see posts from other users!
-                {% elif message.message == 'confirm_fail!' %}
-                    Something went wrong, the confirmation failed.
-                {% endif %}
-            </b>
+            <b>ERROR: {{ message.message }}</b>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% elif message.tags == 'success' %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {% if message.message == 'register_success' %}
-                <b>You've got registrate success. </b>
-            {% elif message.message == 'confirm_success' %}
-                <b>You've got confirming success.</b>
-            {% endif %}
+                <b>{{ message.message }}</b>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endif %}

@@ -88,9 +88,9 @@ def register(request):
                     ),
                 )
             login(request, account)
-            success(request, 'register_success')
+            success(request, "You've got registrate success.")
             return redirect(f'/wall/{account.slug}/')
-        error(request, 'validation_error!')
+        error(request, 'Validation failed!')
     return page
 
 
@@ -103,7 +103,7 @@ def login_account(request):
             account = form.get_user()
             login(request, account)
             return redirect(f'/wall/{account.slug}/')
-        error(request, 'account_not_exist!')
+        error(request, 'The account with this email and / or password doesn´t exist!!')
         return page
     return page
 
@@ -133,7 +133,7 @@ def get_post_by_slug(request, post_slug: str):
                     account=post.author, post=post, by_link=True,
                 ),
             )
-        error(request, 'not_confirmed!')
+        error(request, 'Confirm your registration to see posts from other users!')
         return render(request, 'wall.html', dict(account=post.author))
     return HttpResponseNotFound(content=b'Post with this slug not found')
 
@@ -144,9 +144,9 @@ def confirm_registration(request, unique_string: str):
     if TokenGenerator.check_token(request.user, unique_string):
         request.user.reg_confirmed_date = now()
         request.user.save()
-        success(request, 'confirm_success')
+        success(request, "You've got confirming success.")
         return page
-    error(request, 'confirm_fail!')
+    error(request, 'Something went wrong, the confirmation failed!')
     return page
 
 
@@ -159,7 +159,7 @@ def add_post(request):
     if form.is_valid():
         form.save(request)
         return page
-    error(request, 'post_is_empty!')
+    error(request, 'The post must contain something!')
     return page
 
 
@@ -194,7 +194,7 @@ def edit_bio(request):
     if form.is_valid:
         form.save()
         return page
-    error(request, 'validation_error!')
+    error(request, 'Validation failed!')
     return page
 
 
@@ -244,5 +244,5 @@ def edit_post(request):
         return HttpResponseForbidden(
             content=b'You can not edit another users posts',
             )
-    error(request, 'post_is_empty!')
+    error(request, 'The post must contain something!')
     return page
