@@ -125,3 +125,20 @@ class Like(Model):
     def save(self, *args, **kwargs):
         make_unique_random_slug(self, 10)
         return super(self.__class__, self).save(*args, **kwargs)
+
+
+class Following(Model):
+    slug = SlugField(unique=True)
+    author = ForeignKey(Account, on_delete=CASCADE, related_name='subscribes')
+    addressee = ForeignKey(Account, on_delete=CASCADE, related_name='followers')
+    created_at = DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'< Following : {self.author.get_full_name()} | {self.addressee.get_full_name}>'
+
+    def save(self, *args, **kwargs):
+        make_unique_random_slug(self, 10)
+        return super(self.__class__, self).save(*args, **kwargs)
