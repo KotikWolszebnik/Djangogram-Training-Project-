@@ -4,6 +4,12 @@
             Log in, please to see account info
         </small>
     </p>
+{% elif not request.user.reg_confirmed_date %}
+    <p class="card-text">
+        <small class="text-muted">
+            You can't see user info, posts and pictures before confirm your registration
+        </small>
+    </p>
 {% elif request.user == account %}
     <p class="card-text">
         {{ account.bio }}
@@ -15,12 +21,6 @@
         </small>
     </p>
     {% include 'inc/_edit_profile_button.html' %}
-{% elif not request.user.reg_confirmed_date %}
-    <p class="card-text">
-        <small class="text-muted">
-            You can't see another user info, posts and pictures before confirm your registration
-        </small>
-    </p>
 {% else %}
     <p class="card-text">
         {{ account.bio }}
