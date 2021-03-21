@@ -316,8 +316,6 @@ def like_post(request):
                 content=b'The post is allready liked by you',
             )
     return HttpResponseNotFound(content=b'Post with this slug not found')
-    
-
 
 
 @confirm_required

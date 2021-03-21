@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from os.path import join
 from pathlib import Path
 
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
 import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +143,12 @@ EMAIL_HOST_USER = 'nutmegraw@yandex.ru'
 EMAIL_HOST_PASSWORD = 'ptqjxqsdajomecup'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
+
+cloudinary.config( 
+  cloud_name="djgramm", 
+  api_key="348318659496838", 
+  api_secret="JD2YdUSqwfLNGrSBaXG_g7sgsgM" 
+)
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())

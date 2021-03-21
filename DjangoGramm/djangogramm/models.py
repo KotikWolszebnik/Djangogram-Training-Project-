@@ -5,6 +5,7 @@ from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, ImageField, Model, OneToOneField,
                               SlugField, TextField)
 from nanoid import generate
+from cloudinary.models import CloudinaryField
 
 PICTURE_PATH = 'photos/%Y/%m/%d/'
 BIO_MAX_LENGHT = 150
@@ -71,7 +72,7 @@ class Picture(Model):
     author = ForeignKey(
         Account, on_delete=SET_NULL, null=True, related_name='uploaded_pictures')
     created_at = DateTimeField(auto_now_add=True)
-    picture_itself = ImageField(upload_to=PICTURE_PATH)
+    picture_itself = CloudinaryField('image')
     description = TextField(
         max_length=PICTURE_DESCRIPTION_MAX_LENGHT, blank=True, null=True)
     post = ForeignKey(
