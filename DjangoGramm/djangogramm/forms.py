@@ -33,6 +33,10 @@ class PostForm(ModelForm):
     def clean(self):
         if not (self.files.getlist('pictures') or self.data.get('text')):
             raise ValidationError(message=b'Form must contain something')
+        elif len(self.files.getlist('pictures')) > 10:
+            raise ValidationError(
+                message=b'The post images number is limited to 10',
+            )
         return self.cleaned_data
 
     def save(self, request, commit=True, **kwargs):
