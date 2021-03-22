@@ -62,7 +62,7 @@ def login_account(request):
     return render(request, 'login.html', dict(form=form))
 
 
-def show_wall(request, account_slug: int):
+def show_wall(request, account_slug: int, one_post=None):
     if not Account.objects.filter(slug=account_slug).exists():
         return HttpResponseNotFound(content=b'Account with this slug not found') 
     account = Account.objects.get(slug=account_slug)
@@ -79,10 +79,13 @@ def show_wall(request, account_slug: int):
                 .exists():
             data['subscribed'] = True
         if request.method == 'POST':
-            if request.POST.get('edit_profile'):
+            if request.POST.get('edit_bio'):
                 data['bio_form'] = BioChangeForm(instance=request.user)
             elif request.POST.get('edit_post_slug'):
                 data['edit_post_slug'] = request.POST.get('edit_post_slug')
+        if one_post:
+            data['post'] = one_post
+            data['by_link'] = True
     return render(request, 'wall.html', data)
 
 
@@ -92,16 +95,7 @@ def get_post_by_slug(request, post_slug: str):
     if not Post.objects.filter(slug=post_slug).exists():
         return HttpResponseNotFound(content=b'Post with this slug not found')
     post = Post.objects.get(slug=post_slug)
-    if not request.user.reg_confirmed_date:
-        error(
-            request,
-            'Confirm your registration to see other users posts!',
-            )
-        return render(request, 'wall.html', dict(account=post.author))
-    data = dict(account=post.author, post=post, by_link=True)
-    if request.user == post.author:
-        data['post_form'] = PostForm()
-    return render(request, 'wall.html', data)
+    return show_wall(request, post.author.slug, post)
 
 
 @login_required
