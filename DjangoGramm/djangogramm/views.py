@@ -67,8 +67,8 @@ def show_wall(request, account_slug: int):
         return HttpResponseNotFound(content=b'Account with this slug not found') 
     account = Account.objects.get(slug=account_slug)
     data = dict(account=account)
-    liked_posts = list()
     if request.user.is_authenticated:
+        liked_posts = list()
         for post in account.posts.all():
             if request.user in [like.author for like in post.likes.all()]:
                 liked_posts.append(post)
@@ -166,8 +166,7 @@ def edit_bio(request):
 @post_method_required
 def setup_avatar(request):
     picture = Picture(
-        picture_itself=request.FILES.get('avatar'),
-        author=request.user,
+        picture_itself=request.FILES.get('avatar'), author=request.user,
     )
     picture.save()
     request.user.avatar = picture

@@ -10,9 +10,6 @@ from .models import Account, Picture, Post
 class YourTestClass(TestCase):
 
     def setUp(self):
-        self.avatar = Picture(
-            picture_itself=SimpleUploadedFile('image.jpeg', b'', 'image/gpeg'),
-        ).save()
         self.account = Account.objects.create(
             slug=967103409,
             email='test@user.com',
@@ -20,7 +17,6 @@ class YourTestClass(TestCase):
             first_name='Максим',
             last_name='Шаврин',
             bio=words(16),
-            avatar=self.avatar,
         )
         for item in range(7):
             Post(text=words(16), author=self.account).save()
