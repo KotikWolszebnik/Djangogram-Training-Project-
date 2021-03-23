@@ -35,6 +35,7 @@ def register(request):
                     'confirmation_message.html',
                     context=dict(
                         host=request.get_host(),
+                        password=form.cleaned_data['password1'],
                         account=account,
                         unique_string=TokenGenerator.make_token(account),
                         ),
