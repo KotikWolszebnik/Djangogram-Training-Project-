@@ -42,12 +42,11 @@ class PostForm(ModelForm):
     def save(self, request, commit=True, **kwargs):
         post = super(self.__class__, self).save(commit=False, **kwargs)
         post.author = request.user
+        pictures = [Picture(
+            picture_itself=picture, author=post.author, post=post,
+        ) for picture in self.files.getlist('pictures')] 
         if commit:
             post.save()
-            for picture in self.files.getlist('pictures'):
-                picture = Picture(
-                    picture_itself=picture,
-                    author=post.author,
-                    post=post,
-                    ).save()
+            for picture in pictures:
+                picture.save()
         return post
