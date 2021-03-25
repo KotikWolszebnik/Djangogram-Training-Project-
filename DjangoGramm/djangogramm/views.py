@@ -95,7 +95,7 @@ def get_post_by_slug(request, post_slug: str):
     if not Post.objects.filter(slug=post_slug).exists():
         return HttpResponseNotFound(content=b'Post with this slug not found')
     post = Post.objects.get(slug=post_slug)
-    return show_wall(request, post.author.slug, post)
+    return show_wall(request, post.author.slug, one_post=post)
 
 
 @login_required
@@ -117,7 +117,9 @@ def add_post(request):
     if form.is_valid():
         form.save(request)
     else:
-        error(request, 'The post must contain something!')
+        error(
+            request,
+            'The post is empty, or the attached files number is more then 10')
     return redirect(f'/wall/{request.user.slug}/')
 
 
