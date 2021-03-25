@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.forms import ModelForm, ImageField, FileInput, ValidationError
+from django.db.transaction import atomic
+from django.forms import FileInput, ImageField, ModelForm, ValidationError
 
-from .models import Account, Post, Picture
+from .models import Account, Picture, Post
 
 
 class LoginForm(AuthenticationForm):
@@ -39,14 +40,14 @@ class PostForm(ModelForm):
             )
         return self.cleaned_data
 
-    def save(self, request, commit=True, **kwargs):
+    @atomic
+    def save(self, request, **kwargs):
         post = super(self.__class__, self).save(commit=False, **kwargs)
         post.author = request.user
         pictures = [Picture(
             picture_itself=picture, author=post.author, post=post,
-        ) for picture in self.files.getlist('pictures')] 
-        if commit:
-            post.save()
-            for picture in pictures:
-                picture.save()
+        ) for picture in self.files.getlist('pictures')]
+        post.save()
+        for picture in pictures:
+            picture.save()
         return post
