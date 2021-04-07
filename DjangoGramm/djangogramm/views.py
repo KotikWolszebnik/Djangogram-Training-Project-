@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error, success
 from django.core.mail import send_mail
 from django.http import (HttpResponseForbidden, HttpResponseNotFound,
-                         JsonResponse)
+                        JsonResponse)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.timezone import now
@@ -220,7 +220,7 @@ def subscribe(request):
             .exists():
         return HttpResponseForbidden(content=b'You are allready subscribed')
     Following(author=request.user, addressee=account).save()
-    return JsonResponse()
+    return JsonResponse(dict(code=200))
 
 
 @confirm_required
@@ -240,7 +240,7 @@ def unsubscribe(request):
             content=b'You are not subscribed for unsubscribing',
         )
     Following.objects.get(author=request.user, addressee=account).delete()
-    return JsonResponse()
+    return JsonResponse(dict(code=200))
 
 
 @confirm_required
@@ -255,7 +255,7 @@ def like_post(request):
             content=b'The post is allready liked by you',
         )
     Like(author=request.user, post=post).save()
-    return JsonResponse()
+    return JsonResponse(dict(likes_number=len(post.likes.all()), code=200))
 
 
 @confirm_required
@@ -270,4 +270,4 @@ def unlike_post(request):
             content=b'The Post is not liked by you to unlike',
         )
     Like.objects.get(author=request.user, post=post).delete()
-    return JsonResponse()
+    return JsonResponse(dict(likes_number=len(post.likes.all()), code=200))
