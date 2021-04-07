@@ -35,7 +35,7 @@
         <div class="card-footer">
             <div class="row">
                 <div class="col justify-content-start">
-                    <form action="/post/{% if post in liked_posts %}unlike{% else %}like{% endif %}/"method="POST">
+                    <form action="/post/{% if post in liked_posts %}unlike{% else %}like{% endif %}/" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="slug" value="{{ post.slug }}">
                         <button type="submit" class="btn btn-default">
@@ -44,7 +44,7 @@
                             {% else %}
                                 <i class="bi bi-suit-heart" style="font-size: 1.5rem;"></i>
                             {% endif %}
-                        <i style="font-size: 1.5rem;">{{ post.likes.all|length }}</i>
+                        <i id="likes_number" style="font-size: 1.5rem;">{{ post.likes.all|length }}</i>
                         </button>
                         <i class="bi bi-chat-dots"></i>
                     </form>
