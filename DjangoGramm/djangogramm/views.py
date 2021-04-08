@@ -229,7 +229,7 @@ def subscribe(request):
 def unsubscribe(request):
     if not Account.objects.filter(slug=request.POST.get('addressee')).exists():
         return HttpResponseNotFound(content=b'Account with this slug not found')
-        account = Account.objects.get(slug=request.POST.get('addressee'))
+    account = Account.objects.get(slug=request.POST.get('addressee'))
     if account == request.user:
         return HttpResponseForbidden(
             content=b'You can not unsubscribe from yourself',
