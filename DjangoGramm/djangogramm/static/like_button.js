@@ -1,4 +1,4 @@
-//import "./jquery/dist/jquery.js";
+// import "./jquery/dist/jquery.js";
 
 function like_or_unlike( event ) {
     if ( $( event.currentTarget ).attr( 'action' ) === "/post/like/" ) {
@@ -39,4 +39,5 @@ function like_or_unlike( event ) {
     );
 };
 
-$( 'form[action^="/post/"]' ).on( "submit", like_or_unlike );
+$( 'form[action="/post/like/"]' ).on( "submit", like_or_unlike );
+$( 'form[action="/post/unlike/"]' ).on( "submit", like_or_unlike );
