@@ -136,7 +136,7 @@ def delete_post(request):
             content=b'You can not delete another users posts',
             )
     post.delete()
-    return redirect(f'/wall/{request.user.slug}/')
+    return JsonResponse(dict(code=200))
 
 
 @login_required
