@@ -1,49 +1,46 @@
 {% load static %}
-<!DOCTYPE HTML>
+<!doctype html>
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<title>{% block title_head %}{% endblock %}</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="{% static 'bootstrap-5.0.0-beta2-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'style.css' %}" rel="stylesheet">
-	<link href="{% static 'bootstrap-icons-1.4.1/bootstrap-icons.css' %}" rel="stylesheet">
-	<link rel="shortcut icon" type="image/png" href="/media/photos/favicon.ico"/>
-<script defer src="like_button.4a78f95eff33721f2985.js"></script><script defer src="subscribe_button.523c5783f0b3587ccfd4.js"></script><script defer src="like_button.63d0e952687291a30ca0.js"></script><script defer src="subscribe_button.5fea1f2e2359cfb13520.js"></script></head>
+    <script defer="defer" src="361.b4045a3c4b84fa1ddb00.js"></script>
+    <script defer="defer" src="delete_post.ed248e4cf167b5ef469a.js"></script>
+    <script defer="defer" src="801.118e7f0c1ee7122b50e7.js"></script>
+    <script defer="defer" src="like_button.1e0290ce4cfc2d6effcb.js"></script>
+    <script defer="defer"
+        src="subscribe_button.f3f0cd64c050fb65d0bb.js"></script>
+    <link href="like_button.fe467a86513b53241ca7.css" rel="stylesheet">
+</head>
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title_head %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script defer="defer"
+        src="{% static 'bundle/801.118e7f0c1ee7122b50e7.js' %}"></script>
+    <script defer="defer"
+        src="{% static 'bundle/361.b4045a3c4b84fa1ddb00.js' %}"></script>
+    <script defer="defer"
+        src="{% static 'bundle/like_button.1e0290ce4cfc2d6effcb.js' %}"></script>
+    <script defer="defer"
+        src="{% static 'bundle/subscribe_button.f3f0cd64c050fb65d0bb.js' %}"></script>
+    <link href="{% static 'bundle/like_button.fe467a86513b53241ca7.css' %}"
+        rel="stylesheet">
+    <link rel="shortcut icon" type="image/png"
+        href="/media/photos/favicon.ico" />
 
 <body>
-	<header>
-		{% block header %}
-			{% include 'inc/_header.html' %}
-		{% endblock header %}
-
-		{% if messages %}
-			{% include 'inc/_messages.html' %}
-		{% endif %}
-	</header>
-
-	<div class="container mt-3">
-		<div class="row">
-			{% block sidebar %}
-			
-			{% endblock sidebar %}
-			<div class="col-md-8">
-				{% block postmaking %}
-				
-				{% endblock postmaking %}
-
-				{% block posts %}
-				
-				{% endblock posts %}
-			</div>
-		</div>
-	</div>
-
-	<footer>
-		{% now "DATETIME_FORMAT" %}
-	</footer>
-
+    <header>{% block header %} {% include 'inc/_header.html' %} {% endblock
+        header %} {% if messages %} {% include 'inc/_messages.html' %} {% endif
+        %}</header>
+    <div class="container mt-3">
+        <div class="row">{% block sidebar %} {% endblock sidebar %}<div
+                class="col-md-8">{% block postmaking %} {% endblock postmaking
+                %} {% block posts %} {% endblock posts %}</div>
+        </div>
+    </div>
+    <footer>{% now "DATETIME_FORMAT" %}</footer>
 </body>
+</head>
 
 </html>
