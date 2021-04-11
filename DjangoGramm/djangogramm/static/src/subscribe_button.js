@@ -1,4 +1,4 @@
-import "./jquery/dist/jquery.js";
+import * as $ from "./jquery/dist/jquery.js";
 
 function subscribe_or_unsubscribe( event ) {
     if ( $( event.currentTarget ).attr( 'action' ) === "/subscribe/" ) {
