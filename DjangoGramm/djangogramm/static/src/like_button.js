@@ -1,5 +1,9 @@
-import "./bootstrap-5.0.0-beta2-dist/js/bootstrap.bundle";
-import "./jquery/dist/jquery.js";
+import "./bootstrap-5.0.0-beta2-dist/css/bootstrap.min.css";
+import "./style.css";
+import "./bootstrap-icons-1.4.1/bootstrap-icons.css";
+
+import "./bootstrap-5.0.0-beta2-dist/js/bootstrap.min.js";
+import * as $ from "./jquery/dist/jquery.js";
 
 function like_or_unlike( event ) {
     if ( $( event.currentTarget ).attr( 'action' ) === "/post/like/" ) {
