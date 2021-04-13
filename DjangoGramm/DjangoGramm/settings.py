@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'cloudinary',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -110,6 +115,20 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'djangogramm.Account'
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.open_id.OpenIdAuth',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '147593350573-neabfk3a0baiug7sitcb22ilpu2d6o0t.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'WxzcgwUcZ9vX3YxCFx3xTo2-'
+
+SOCIAL_AUTH_GITHUB_KEY = '7dfd075381aa6517da09'
+SOCIAL_AUTH_GITHUB_SECRET = '59ce3c74b8b0691b494e80e53c6aff92099db414'
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -144,10 +163,10 @@ EMAIL_HOST_PASSWORD = 'ptqjxqsdajomecup'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
-cloudinary.config( 
-  cloud_name="djgramm", 
-  api_key="348318659496838", 
-  api_secret="JD2YdUSqwfLNGrSBaXG_g7sgsgM" 
+cloudinary.config(
+    cloud_name="djgramm",
+    api_key="348318659496838",
+    api_secret="JD2YdUSqwfLNGrSBaXG_g7sgsgM"
 )
 
 # Activate Django-Heroku.
