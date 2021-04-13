@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.messages import error, success
 from django.core.mail import send_mail
 from django.http import (HttpResponseForbidden, HttpResponseNotFound,
-                        JsonResponse)
+                         JsonResponse)
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.timezone import now
