@@ -121,6 +121,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
 
     'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GooglePlusAuth',
 )
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '147593350573-neabfk3a0baiug7sitcb22ilpu2d6o0t.apps.googleusercontent.com'
