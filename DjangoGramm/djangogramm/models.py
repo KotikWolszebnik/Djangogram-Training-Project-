@@ -1,5 +1,5 @@
 from cloudinary.models import CloudinaryField
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, Model, OneToOneField, SlugField,
                               TextField)
