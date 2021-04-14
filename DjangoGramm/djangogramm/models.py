@@ -1,5 +1,5 @@
 from cloudinary.models import CloudinaryField
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, Model, OneToOneField, SlugField,
                               TextField)
@@ -13,19 +13,28 @@ PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
 
 
+class AccountManager(UserManager):
+    def create_user(self, username, email=None, **kwargs):
+        kwargs['username'] = email
+        kwargs['email'] = email
+        return super().create_user(**kwargs)
+
+
 # Create your models here.
 
 
 class Account(AbstractUser):
     slug = SlugField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
     username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
     bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
     avatar = OneToOneField(
         'Picture', on_delete=SET_NULL, blank=True, null=True, related_name='avatar_of')
+
+    objects = AccountManager()
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
