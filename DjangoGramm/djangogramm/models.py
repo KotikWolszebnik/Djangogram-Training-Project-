@@ -15,9 +15,7 @@ COMMENT_MAX_LENGHT = 1000
 
 class AccountManager(UserManager):
     def create_user(self, username, email=None, **kwargs):
-        kwargs['username'] = email
-        kwargs['email'] = email
-        return super().create_user(**kwargs)
+        return super().create_user(username=email, email=email, **kwargs)
 
 
 # Create your models here.
