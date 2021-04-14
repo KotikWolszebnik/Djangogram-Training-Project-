@@ -1,11 +1,10 @@
-from string import digits
-
+from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
-                              ForeignKey, ImageField, Model, OneToOneField,
-                              SlugField, TextField)
-from nanoid import generate
-from cloudinary.models import CloudinaryField
+                              ForeignKey, Model, OneToOneField, SlugField,
+                              TextField)
+
+from .utils import make_unique_random_slug
 
 PICTURE_PATH = 'photos/%Y/%m/%d/'
 BIO_MAX_LENGHT = 150
@@ -14,23 +13,13 @@ PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
 
 
-def make_unique_random_slug(obj, slug_lenght: int, letters=True):
-    if not obj.slug:
-        is_unique = False
-        while not is_unique:
-            slug = generate(alphabet=digits, size=slug_lenght)
-            if letters:
-                slug = generate(size=slug_lenght)
-            is_unique = not obj.__class__.objects.filter(slug=slug).exists()
-        obj.slug = slug
-
 # Create your models here.
 
 
 class Account(AbstractUser):
     slug = SlugField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
     username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)

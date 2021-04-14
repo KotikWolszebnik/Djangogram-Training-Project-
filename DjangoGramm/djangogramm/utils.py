@@ -1,5 +1,6 @@
 from django.http import HttpResponseForbidden, HttpResponseNotAllowed
 from nanoid import generate
+from string import digits
 
 
 # Create your classes here.
@@ -45,3 +46,14 @@ def confirm_required(func):
             content=b'You must confirm registration for doing this',
             )
     return wrapper
+
+
+def make_unique_random_slug(obj, slug_lenght: int, letters=True):
+    if not obj.slug:
+        is_unique = False
+        while not is_unique:
+            slug = generate(alphabet=digits, size=slug_lenght)
+            if letters:
+                slug = generate(size=slug_lenght)
+            is_unique = not obj.__class__.objects.filter(slug=slug).exists()
+        obj.slug = slug
