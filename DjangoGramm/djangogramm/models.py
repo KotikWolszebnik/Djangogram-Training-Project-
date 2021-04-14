@@ -1,5 +1,6 @@
 from cloudinary.models import CloudinaryField
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.db import IntegrityError
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, Model, OneToOneField, SlugField,
                               TextField)
@@ -11,6 +12,37 @@ BIO_MAX_LENGHT = 150
 POST_MAX_LENGHT = 2200
 PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
+
+
+class AccountManager(UserManager):
+    def create_user(
+        self, email=None, password=None, first_name=None, last_name=None,
+    ):
+        """
+        Creates and saves a User with the given email and password.
+
+        NOTE: Argument 'username' is needed for social-auth.
+        It is not actually used.
+        """
+        if not email:
+            raise ValueError('Users must have an email address.')
+        # Validate email is unique in database
+        if self.model.objects\
+            .filter(email=self.normalize_email(email))\
+                .exists():
+            raise ValueError('This email has already been registered.')
+        user = self.model(
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
+        )
+        user.set_password(password)
+        # Save and catch IntegrityError (due to email being unique)
+        try:
+            user.save(using=self._db)
+        except IntegrityError:
+            raise ValueError('This email has already been registered.')
+        return user
 
 
 # Create your models here.
@@ -26,6 +58,8 @@ class Account(AbstractUser):
     bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
     avatar = OneToOneField(
         'Picture', on_delete=SET_NULL, blank=True, null=True, related_name='avatar_of')
+
+    objects = AccountManager()
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
