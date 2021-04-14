@@ -13,11 +13,6 @@ PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
 
 
-class AccountManager(UserManager):
-    def create_user(self, username, email, password=None, **kwargs):
-        return super().create_user(email, email, password, **kwargs)
-
-
 # Create your models here.
 
 
@@ -31,8 +26,6 @@ class Account(AbstractUser):
     bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
     avatar = OneToOneField(
         'Picture', on_delete=SET_NULL, blank=True, null=True, related_name='avatar_of')
-
-    objects = AccountManager()
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
