@@ -19,7 +19,7 @@ COMMENT_MAX_LENGHT = 1000
 class Account(AbstractUser):
     slug = SlugField(unique=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
     username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
