@@ -15,9 +15,7 @@ COMMENT_MAX_LENGHT = 1000
 
 
 class AccountManager(UserManager):
-    def create_user(
-        self, email=None, password=None, first_name=None, last_name=None,
-    ):
+    def create_user(self, username='', email=None, password=None):
         """
         Creates and saves a User with the given email and password.
 
@@ -31,11 +29,7 @@ class AccountManager(UserManager):
             .filter(email=self.normalize_email(email))\
                 .exists():
             raise ValueError('This email has already been registered.')
-        user = self.model(
-            email=self.normalize_email(email),
-            first_name=first_name,
-            last_name=last_name,
-        )
+        user = self.model(email=self.normalize_email(email))
         user.set_password(password)
         # Save and catch IntegrityError (due to email being unique)
         try:

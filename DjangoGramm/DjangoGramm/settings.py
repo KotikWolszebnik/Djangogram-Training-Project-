@@ -125,20 +125,22 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
+# Google settings:
+# https://python-social-auth.readthedocs.io/en/latest/backends/google.html#google-oauth2
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '147593350573-neabfk3a0baiug7sitcb22ilpu2d6o0t.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'WxzcgwUcZ9vX3YxCFx3xTo2-'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
-SOCIAL_AUTH_GOOGLE_OAUTH2_PROFILE_EXTRA_PARAMS = dict(
-    fields='id, name, email, age_range',
-)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    ]
+
+# GitHub settings:
+# https://python-social-auth.readthedocs.io/en/latest/backends/github.html
 
 SOCIAL_AUTH_GITHUB_KEY = '7dfd075381aa6517da09'
 SOCIAL_AUTH_GITHUB_SECRET = '59ce3c74b8b0691b494e80e53c6aff92099db414'
 SOCIAL_AUTH_GITHUB_SCOPE = ['email']
-SOCIAL_AUTH_GITHUB_PROFILE_EXTRA_PARAMS = dict(
-    fields='id, name, email, age_range',
-)
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
