@@ -140,7 +140,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 SOCIAL_AUTH_GITHUB_KEY = '7dfd075381aa6517da09'
 SOCIAL_AUTH_GITHUB_SECRET = '59ce3c74b8b0691b494e80e53c6aff92099db414'
-SOCIAL_AUTH_GITHUB_SCOPE = ['email']
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
