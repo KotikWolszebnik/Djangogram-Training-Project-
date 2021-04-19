@@ -1,6 +1,5 @@
 from cloudinary.models import CloudinaryField
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.db import IntegrityError
+from django.contrib.auth.models import AbstractUser
 from django.db.models import (CASCADE, SET_NULL, DateTimeField, EmailField,
                               ForeignKey, Model, OneToOneField, SlugField,
                               TextField)
@@ -14,31 +13,6 @@ PICTURE_DESCRIPTION_MAX_LENGHT = 150
 COMMENT_MAX_LENGHT = 1000
 
 
-class AccountManager(UserManager):
-    def create_user(self, username='', email=None, password=None):
-        """
-        Creates and saves a User with the given email and password.
-
-        NOTE: Argument 'username' is needed for social-auth.
-        It is not actually used.
-        """
-        if not email:
-            raise ValueError('Users must have an email address.')
-        # Validate email is unique in database
-        if self.model.objects\
-            .filter(email=self.normalize_email(email))\
-                .exists():
-            raise ValueError('This email has already been registered.')
-        user = self.model(email=self.normalize_email(email))
-        user.set_password(password)
-        # Save and catch IntegrityError (due to email being unique)
-        try:
-            user.save(using=self._db)
-        except IntegrityError:
-            raise ValueError('This email has already been registered.')
-        return user
-
-
 # Create your models here.
 
 
@@ -46,14 +20,11 @@ class Account(AbstractUser):
     slug = SlugField(unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
-    username = None
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
     bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
     avatar = OneToOneField(
         'Picture', on_delete=SET_NULL, blank=True, null=True, related_name='avatar_of')
-
-    objects = AccountManager()
 
     def __str__(self):
         return f'< Account : {self.get_full_name()} >'
