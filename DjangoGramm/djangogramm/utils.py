@@ -8,7 +8,7 @@ class TokenGenerator(object):
     tokens_storage = list()
 
     def __init__(self, account):
-        self.token = generate(size=40)
+        self.token = generate(size=40).replace(' ', '-')
         self.account = account
 
     @classmethod
