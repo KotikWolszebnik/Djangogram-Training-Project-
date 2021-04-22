@@ -19,7 +19,7 @@ from .views import (add_post, auth_need, confirm_registration, delete_avatar,
                     delete_post, edit_bio, edit_post, get_post_by_slug,
                     like_post, login_account, logout_account, register,
                     setup_avatar, show_wall, subscribe, unlike_post,
-                    unsubscribe)
+                    unsubscribe, third_party_login)
 
 urlpatterns = [
     path('', login_account),
@@ -40,4 +40,5 @@ urlpatterns = [
     path('unsubscribe/', unsubscribe, name='unsubscribe'),
     path('post/like/', like_post, name='like_post'),
     path('post/unlike/', unlike_post, name='unlike_post'),
+    path('third_party_login/', third_party_login, name='third_party_login'),
 ]
