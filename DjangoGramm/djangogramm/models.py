@@ -17,9 +17,10 @@ COMMENT_MAX_LENGHT = 1000
 
 
 class Account(AbstractUser):
-    slug = SlugField(unique=True)
+    backend = 'django.contrib.auth.backends.ModelBackend'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password']
+    slug = SlugField(unique=True)
     email = EmailField(unique=True)
     reg_confirmed_date = DateTimeField(auto_now=False, null=True)
     bio = TextField(max_length=BIO_MAX_LENGHT, blank=True, default='')
