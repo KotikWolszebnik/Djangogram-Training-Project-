@@ -63,6 +63,13 @@ def login_account(request):
     return render(request, 'login.html', dict(form=form))
 
 
+def third_party_login(request):
+    if request.user.reg_confirmed_date in ('', None):
+        request.user.reg_confirmed_date = now()
+        request.user.save()
+    return show_wall(request, request.user.slug)
+
+
 def show_wall(request, account_slug: int, one_post=None):
     if not Account.objects.filter(slug=account_slug).exists():
         return HttpResponseNotFound(content=b'Account with this slug not found') 
