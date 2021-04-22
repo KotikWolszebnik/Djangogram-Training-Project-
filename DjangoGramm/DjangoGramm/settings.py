@@ -126,6 +126,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/third_party_login/'
 
 # Google settings:
 # https://python-social-auth.readthedocs.io/en/latest/backends/google.html#google-oauth2
@@ -143,6 +144,11 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 SOCIAL_AUTH_GITHUB_KEY = '7dfd075381aa6517da09'
 SOCIAL_AUTH_GITHUB_SECRET = '59ce3c74b8b0691b494e80e53c6aff92099db414'
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
+
+# # Test Github settings
+# SOCIAL_AUTH_GITHUB_KEY = 'e51d683d91372b226460'
+# SOCIAL_AUTH_GITHUB_SECRET = 'dd63478279b999bb279ba9537d4563132ca3d9e0'
+# SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
