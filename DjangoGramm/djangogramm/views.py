@@ -274,7 +274,7 @@ def unlike_post(request):
     post = Post.objects.get(slug=request.POST.get('slug'))
     if not Like.objects.filter(author=request.user, post=post).exists():
         return HttpResponseForbidden(
-            content=b'The Post is not liked by you to unlike',
+            content=b'The Post is not liked by you to unlik',
         )
     Like.objects.get(author=request.user, post=post).delete()
     return JsonResponse(dict(likes_number=len(post.likes.all()), code=200))
